@@ -3,9 +3,14 @@ package com.example.lvmufan.myapplication;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -22,11 +27,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog ;
-    EditText usernameText = (EditText) this.findViewById(R.id.login_username);
-    EditText passwordText = (EditText) this.findViewById(R.id.login_password);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    processLogin();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                processLogin();
             }
         }); //等待button被按的响应
 
@@ -58,59 +58,72 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //process login
-    private void processLogin() throws IOException {
-        new Thread(new Runnable() {
+    private void processLogin(){//} throws IOException {
+        EditText usernameText = (EditText) this.findViewById(R.id.login_username);
+        EditText passwordText = (EditText) this.findViewById(R.id.login_password);
+        String username = usernameText.getText().toString();
+        String password = passwordText.getText().toString();
+
+        OkHttpClient login_client = new OkHttpClient();//用okhttp的网络架构进行登录
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
+                .add("username", username)
+                .add("password", password)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://10.15.82.223:9090/app_get_data/app_signincheck")//指定访问的服务器地址
+                .post(postBody)
+                .build();
+        Call call = login_client.newCall(request);
+        setProgressDialouge();
+        Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+        startActivity(intent);
+        call.enqueue(new Callback() {
             @Override
-            public void run() {
+            public void onFailure(Call call, IOException e) {
+                Log.d("CONNECTION", "请求失败 !!") ;
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                progressDialog.dismiss();
+                Log.d("CONNECTION", "请求成功");
+                String responseData = response.body().string() ;
+                //parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
                 try{
-                    String username = usernameText.getText().toString();
-                    String password = passwordText.getText().toString();
-                    final OkHttpClient login_client = new OkHttpClient();//用okhttp的网络架构进行登录
-                    RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
-                            .add("username", username)
-                            .add("password", password)
-                            .build();
+                    JsonObject jsonObject = (JsonObject) new JsonParser().parse(responseData);
 
-                    final Request request = new Request.Builder()
-                            .url("http://10.15.82.223:9090/app_get_data/app_signincheck")//指定访问的服务器地址
-                            .post(postBody)
-                            .build();
-
-                    setProgressDialog();
-                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                    startActivity(intent);
-
-                    login_client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            Log.d("++CONNECTION++", "ashe nai !!") ;
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-
-                            progressDialog.dismiss();
-                            Log.d("++CONNECTION++", "asche!!");
-                            String json_string = response.body().string() ;
-
-
-                        }
-                    });
-
-                    Response response = login_client.newCall(request).execute();
-                    String responseData = response.body().string();
-                    parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-
+                //System.out.println("rst:" + jsonObject.get("rst").getAsInt());
+                System.out.println("msg:" + jsonObject.get("msg").getAsString());
+                System.out.println("token:" + jsonObject.get("token").getAsString());
                 }catch (Exception e){
                     e.printStackTrace();
                 }
+                /*try {
+                    JSONObject jsonObject = new JSONObject(json_string.substring(json_string.indexOf("{"), json_string.lastIndexOf("}") + 1)) ;
+                    JSONArray server_res_array = jsonObject.getJSONArray("server_response") ;
+                    JSONObject main_obj = server_res_array.getJSONObject(0) ;
+                    final String code_string = main_obj.getString("code") ;
+                    final String message_string = main_obj.getString("message") ;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(code_string.equals("reg_true")){
+                                Toast.makeText(LoginActivity.this, message_string, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
+                }
+                */
             }
         });
 
+
     }
 
-    private void setProgressDialog(){
+    private void setProgressDialouge(){
 
         progressDialog = new ProgressDialog(LoginActivity.this) ;
         progressDialog.setTitle("Please Wait");
@@ -120,20 +133,19 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
-    private void parseJSONWithJSONObject(String jsonData){
+    /*private void parseJSONWithJSONObject(String jsonData){
         try{
             JSONArray jsonArray = new JSONArray(jsonData);
             for(int i = 0;i < jsonArray.length();i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String message = jsonObject.getString("msg");
                 String msg = unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
-                Log.d("msg",msg);//打印传输回来的消息
+                Log.d("msg", msg);//打印传输回来的消息
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
+    }*/
     public static String unicodeToUtf8(String theString) {
         char aChar;
         int len = theString.length();
