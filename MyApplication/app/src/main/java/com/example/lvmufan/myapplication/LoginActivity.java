@@ -17,7 +17,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +28,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
+    ProgressDialog progressDialog ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
     //process login
     private void processLogin() throws IOException {
         EditText usernameText = (EditText) this.findViewById(R.id.login_username);
@@ -65,22 +66,68 @@ public class LoginActivity extends AppCompatActivity {
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
 
-        OkHttpClient login_client = new OkHttpClient();//用okhttp的网络架构进行登录
+        final OkHttpClient login_client = new OkHttpClient();//用okhttp的网络架构进行登录
         RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
                 .add("username", username)
                 .add("password", password)
-                .build() ;
+                .build();
 
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url("http://10.15.82.223:9090/app_get_data/app_signincheck")//指定访问的服务器地址
                 .post(postBody)
-                .build() ;
+                .build();
+        setProgressDialouge();
+        Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+        startActivity(intent);
+        login_client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("++CONNECTION++", "ashe nai !!") ;
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                progressDialog.dismiss();
+                Log.d("++CONNECTION++", "asche!!");
+                String json_string = response.body().string() ;
+
+                /*try {
+                    JSONObject jsonObject = new JSONObject(json_string.substring(json_string.indexOf("{"), json_string.lastIndexOf("}") + 1)) ;
+                    JSONArray server_res_array = jsonObject.getJSONArray("server_response") ;
+                    JSONObject main_obj = server_res_array.getJSONObject(0) ;
+                    final String code_string = main_obj.getString("code") ;
+                    final String message_string = main_obj.getString("message") ;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(code_string.equals("reg_true")){
+                                Toast.makeText(LoginActivity.this, message_string, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }*/
+            }
+        });
 
         Response response = login_client.newCall(request).execute();
         String responseData = response.body().string();
         parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
     }
 
+    private void setProgressDialouge(){
+
+        progressDialog = new ProgressDialog(LoginActivity.this) ;
+        progressDialog.setTitle("Please Wait");
+        progressDialog.setMessage("Connecting to server...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
 
     private void parseJSONWithJSONObject(String jsonData){
         try{
