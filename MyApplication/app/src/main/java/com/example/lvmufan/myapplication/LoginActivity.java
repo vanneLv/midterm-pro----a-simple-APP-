@@ -2,6 +2,7 @@ package com.example.lvmufan.myapplication;
 
 import android.support.v7.app.AppCompatActivity;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,11 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.sign_in_button:
-                    processLogin();//跳转到登录进程
+                    try {
+                        processLogin();//跳转到登录进程
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case R.id.sign_up_button:
                     Intent intent = new Intent(LoginActivity.this,SignupActivity.class);
@@ -60,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //process login
-    public void processLogin() {
+    public void processLogin() throws IOException {
         EditText usernameText = (EditText) this.findViewById(R.id.login_username);
         EditText passwordText = (EditText) this.findViewById(R.id.login_password);
         String username = usernameText.getText().toString();
@@ -80,10 +85,8 @@ public class LoginActivity extends AppCompatActivity {
         Response response = login_client.newCall(request).execute();
         String responseData = response.body().string();
         parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-    }catch (Exception e){
-        e.printStackTrace();
     }
-}
+
 
     private void parseJSONWithJSONObject(String jsonData){
         try{
@@ -94,6 +97,8 @@ public class LoginActivity extends AppCompatActivity {
                 String msg = unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
                 Log.d("msg",msg);//打印传输回来的消息
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
     public static String unicodeToUtf8(String theString) {
