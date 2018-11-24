@@ -25,8 +25,9 @@
         android:id="@+id/signup_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="4dp"
-        tools:layout_editor_absoluteY="155dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="MissingConstraints">
 
         <LinearLayout
             android:id="@+id/user_signup_form"
@@ -93,15 +94,17 @@
                 android:text="@string/action_sign_up_confirm"
                 android:textStyle="bold" />
 
+
+            <Button
+                android:id="@+id/cancel_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="230dp"
+                android:text="@string/action_sign_up_cancel"
+                android:textStyle="bold" />
+
         </LinearLayout>
+
     </ScrollView>
-
-    <Button
-        android:id="@+id/cancel_button"
-        android:layout_width="354dp"
-        android:layout_height="49dp"
-        android:text="取消"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="424dp" />
-
 </android.support.constraint.ConstraintLayout>

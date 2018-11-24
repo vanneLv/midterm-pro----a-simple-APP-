@@ -23,6 +23,7 @@
     <string name="sign_up_email">邮箱</string>
     <string name="sign_up_password">密码</string>
     <string name="action_sign_up_confirm">注册</string>
+    <string name="action_sign_up_cancel">取消</string>
     <string name="error_exist_username">用户名已存在！</string>
     <string name="error_empty_email">请输入邮箱！</string>
     <string name="error_fail_sign_up">注册失败!</string>
