@@ -24,7 +24,9 @@
     <ScrollView
         android:id="@+id/signup_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="155dp">
 
         <LinearLayout
             android:id="@+id/user_signup_form"
@@ -52,7 +54,7 @@
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/singup_email"
+                    android:id="@+id/signup_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/sign_up_email"
@@ -93,4 +95,13 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="354dp"
+        android:layout_height="49dp"
+        android:text="取消"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="424dp" />
+
 </android.support.constraint.ConstraintLayout>
