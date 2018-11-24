@@ -33,40 +33,33 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        ClickListener cl = new ClickListener();
-
         Button loginButton = (Button) this.findViewById(R.id.sign_in_button);
-        loginButton.setOnClickListener(cl); //等待button被按的响应（不知道是否必要，但是网上有人写了）
+        loginButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    processLogin();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }); //等待button被按的响应
 
         Button registerButton = (Button) this.findViewById(R.id.sign_up_button);
-        registerButton.setOnClickListener(cl);
-
-    }
-
-
-    class ClickListener implements OnClickListener {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.sign_in_button:
-                    try {
-                        processLogin();//跳转到登录进程
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case R.id.sign_up_button:
-                    Intent intent = new Intent(LoginActivity.this,SignupActivity.class);
-                    startActivity(intent);//跳转到注册界面
-                    break;
-                default:
-                    break;
+        registerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivity(intent);
+                LoginActivity.this.finish();
             }
-        }
+        });
+
     }
+
 
     //process login
-    public void processLogin() throws IOException {
+    private void processLogin() throws IOException {
         EditText usernameText = (EditText) this.findViewById(R.id.login_username);
         EditText passwordText = (EditText) this.findViewById(R.id.login_password);
         String username = usernameText.getText().toString();

@@ -35,28 +35,25 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        Button registerButton = (Button) this.findViewById(R.id.sign_up_button);
-        Button cancelButton = (Button) this.findViewById(R.id.cancel_button);
-        ClickListener cl = new ClickListener();
-        registerButton.setOnClickListener(cl);
-        cancelButton.setOnClickListener(cl);
-    }
 
-    class ClickListener implements OnClickListener {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.sign_up_button:
-                    processRegister();
-                    break;
-                case R.id.cancel_button:
-                    Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
-                    startActivity(intent);
-                    break;
-                default:
-                    break;
+        Button registerButton = (Button) this.findViewById(R.id.sign_up_confirm_button);
+        Button cancelButton = (Button) this.findViewById(R.id.cancel_button);
+
+        registerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                processRegister();
             }
-        }
+        });
+
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                startActivity(intent);
+                SignupActivity.this.finish();
+            }
+        });
     }
 
     public void processRegister() {
