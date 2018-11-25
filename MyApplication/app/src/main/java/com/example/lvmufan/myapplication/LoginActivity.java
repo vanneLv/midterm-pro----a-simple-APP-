@@ -66,7 +66,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                 startActivity(intent);
-                //LoginActivity.this.finish();
             }
         });
 
@@ -91,13 +90,13 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         Call call = login_client.newCall(request);
-        setProgressDialouge();
+        setProgressDialouge();//显示联网状态
 
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d("CONNECTION", "请求失败 !!") ;
-            }
+            }//对服务器请求失败
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
@@ -105,27 +104,11 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("CONNECTION", "请求成功");
                 final String responseData = response.body().string() ;
                 parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                /*LoginActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-                if(state == 1){
-                    Intent intent = new Intent();
-                    intent.setClass(LoginActivity.this,MainMenuActivity.class);
-                    startActivity(intent);
-                    //LoginActivity.this.finish();
-                }*/
-            }
-
+            }//对服务器请求成功
         });
-
     }
 
-
-
-    private void setProgressDialouge(){
+    private void setProgressDialouge(){//联网状态的显示
         progressDialog = new ProgressDialog(LoginActivity.this) ;
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Connecting to server...");
@@ -152,21 +135,16 @@ public class LoginActivity extends AppCompatActivity {
                              Toast.makeText(LoginActivity.this, "登录成功",Toast.LENGTH_LONG ).show();
                          }
                      });
-                     //Looper.prepare();
-                     //Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
-                     //Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
-                     //Looper.loop();
                      Intent intent = new Intent();
                      intent.setClass(LoginActivity.this,MainMenuActivity.class);
-                     startActivity(intent);
+                     startActivity(intent);//跳转到登录后的主界面
 
                      user.setToken(token);
                      SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
                      SharedPreferences.Editor editor = sp.edit();
-                     editor.putString("username", user.getUsername());
-                     editor.putString("token", token);
+                     editor.putString("username", user.getUsername());//对username进行存储，在主界面个人信息中显示
+                     editor.putString("token", token);//存储token验证登录情况
                      editor.apply();
-
                  }
                  else{//如果登录失败
                      Log.d("msg", msg);//打印传输回来的消息
@@ -177,10 +155,6 @@ public class LoginActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
-
     }
-
 }
 

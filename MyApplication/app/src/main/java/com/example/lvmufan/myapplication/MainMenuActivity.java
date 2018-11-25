@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.BreakIterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -40,12 +42,14 @@ public class MainMenuActivity extends AppCompatActivity
     ProgressDialog progressDialog;
     User user = new User();
     String token;
+    TextView responseText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
+        responseText = (TextView) findViewById(R.id.response_content);
+        responseText.setMovementMethod(ScrollingMovementMethod.getInstance());
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
         user.setToken(sp.getString("token"," "));
@@ -164,6 +168,18 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+                String message = Message.unicodeToUtf8(responseData);
+                showResponse(message);
+            }
+        });
+    }
+    private void showResponse(final String response) {
+        //在子线程中更新UI
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // 在这里进行UI操作，将结果显示到界面上
+                responseText.setText(response);
             }
         });
     }
@@ -182,10 +198,9 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     private void parseJSONWithJSONObject(String responseData){
-        String msg;
+        String msg = null;
         try{
             JSONObject jsonObject = new JSONObject(responseData.substring(responseData.indexOf("{"), responseData.lastIndexOf("}") + 1)) ;
-
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
                 msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
@@ -197,9 +212,6 @@ public class MainMenuActivity extends AppCompatActivity
                             Toast.makeText(MainMenuActivity.this, "尚未登录",Toast.LENGTH_LONG ).show();
                         }
                     });
-                    //Looper.prepare();
-                    //Toast.makeText(MainMenuActivity.this, msg,Toast.LENGTH_LONG ).show();
-                    //Looper.loop();
                     Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
@@ -214,16 +226,9 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("content",content);
                 Log.d("sent_id",sent_id);
                 Log.d("doc_id",doc_id);
-
-                TextView tv = (TextView) findViewById(R.id.content_tv);
-                String str = "title: "+ title+"\ncontent:"+content+"\nsent_id:"+sent_id+"\ndoc_id:"+doc_id;
-                tv.setText(str);
-
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
-
 }
