@@ -1,6 +1,7 @@
 package com.example.lvmufan.myapplication;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
@@ -31,16 +32,25 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import android.content.SharedPreferences;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     ProgressDialog progressDialog;
+    User user = new User();
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
+        user.setUsername(sp.getString("username", "user"));
+        user.setToken(sp.getString("token"," "));
+        //token = sp.getString("token",null);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -61,6 +71,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -127,8 +138,9 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void processGetNameEntityText() {
         OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
+
         RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
-                .add("token", LoginActivity.user.getToken())
+                .add("token", user.getToken())
                 .build();
 
         Request request = new Request.Builder()
@@ -181,6 +193,9 @@ public class MainMenuActivity extends AppCompatActivity
                 Looper.prepare();
                 Toast.makeText(MainMenuActivity.this, msg,Toast.LENGTH_LONG ).show();
                 Looper.loop();
+                Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
             else{//如果成功
                 Log.d("msg", msg);//打印传输回来的消息

@@ -1,5 +1,7 @@
 package com.example.lvmufan.myapplication;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 
@@ -33,7 +35,8 @@ import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog ;
-    final static User user = new User();
+    final public static User user = new User();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                 startActivity(intent);
-                LoginActivity.this.finish();
+                //LoginActivity.this.finish();
             }
         });
 
@@ -87,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                 .url("http://10.15.82.223:9090/app_get_data/app_signincheck")//指定访问的服务器地址
                 .post(postBody)
                 .build();
+
         Call call = login_client.newCall(request);
         setProgressDialouge();
 
@@ -132,12 +136,18 @@ public class LoginActivity extends AppCompatActivity {
                      Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
                      //Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
                      Looper.loop();
+
                      user.setToken(token);
+                     SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
+                     SharedPreferences.Editor editor = sp.edit();
+                     editor.putString("username", user.getUsername());
+                     editor.putString("token", token);
+                     editor.apply();
 
                      Intent intent = new Intent();
                      intent.setClass(LoginActivity.this,MainMenuActivity.class);
                      startActivity(intent);
-                     //LoginActivity.this.finish();
+                     LoginActivity.this.finish();
                  }
                  else{//如果登录失败
                      Log.d("msg", msg);//打印传输回来的消息
