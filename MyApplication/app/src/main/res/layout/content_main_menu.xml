@@ -17,6 +17,9 @@
             android:id="@+id/content_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:singleLine="false"
+            android:textSize="24sp"
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:text="@string/welcome_words"/>
     </LinearLayout>

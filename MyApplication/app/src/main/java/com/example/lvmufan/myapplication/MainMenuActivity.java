@@ -215,8 +215,9 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("sent_id",sent_id);
                 Log.d("doc_id",doc_id);
 
-                //TextView tv = (TextView) findViewById(R.id.content_tv);
-                //tv.setText("title: "+ title+"content"+content+"sent_id"+sent_id+"doc_id"+doc_id);
+                TextView tv = (TextView) findViewById(R.id.content_tv);
+                String str = "title: "+ title+"\ncontent:"+content+"\nsent_id:"+sent_id+"\ndoc_id:"+doc_id;
+                tv.setText(str);
 
             }
         }catch (Exception e){
