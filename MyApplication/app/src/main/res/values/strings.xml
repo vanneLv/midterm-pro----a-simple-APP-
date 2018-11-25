@@ -45,6 +45,7 @@
     <string name="nav_left_bar4">设置</string>
     <string name="nav_left_bar5">退出</string>
     <string name="nav_left_bar_tittle">Others</string>
+    <string name="welcome_words">Welcome to my APP!</string>
 
 
 </resources>

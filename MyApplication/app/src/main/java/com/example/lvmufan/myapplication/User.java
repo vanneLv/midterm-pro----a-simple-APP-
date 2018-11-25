@@ -6,7 +6,9 @@ public class User {
     private String mail;
     private String sex;
     private String phoneNumber;
+    private String token;
 
+    public void User(){}
     public String getUsername() {
         return username;
     }
@@ -37,6 +39,10 @@ public class User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
-
+    public void setToken(String Token) {
+        this.token = Token;
+    }
+    public String getToken() {
+        return token;
+    }
 }
