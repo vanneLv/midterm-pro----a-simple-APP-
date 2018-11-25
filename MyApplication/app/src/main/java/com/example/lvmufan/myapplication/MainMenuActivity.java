@@ -36,6 +36,11 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        /*获取Intent中的Bundle对象*/
+        Bundle bundle = this.getIntent().getExtras();
+        /*获取Bundle中的数据，注意类型和key*/
+        String token = bundle.getString("token");
+
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

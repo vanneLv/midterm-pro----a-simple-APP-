@@ -115,15 +115,21 @@ public class LoginActivity extends AppCompatActivity {
                 msg = unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
 
                  if(msg.equals("登录成功")){//如果登录成功
-                    String token = jsonObject.getString("token");
-                    Log.d("msg", msg);//打印传输回来的消息以及token
-                    Log.d("token",token);
+                     String token = jsonObject.getString("token");
+                     Log.d("msg", msg);//打印传输回来的消息以及token
+                     Log.d("token",token);
                      Looper.prepare();
                      Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
-                     Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
+                     //Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
                      Looper.loop();
-                     Intent intent = new Intent(LoginActivity.this,MainMenuActivity.class);
+
+                     Intent intent = new Intent();
+                     intent.setClass(LoginActivity.this,MainMenuActivity.class);
+                     Bundle bundle = new Bundle();
+                     bundle.putString("token", token);
+                     intent.putExtras(bundle);
                      startActivity(intent);
+                     LoginActivity.this.finish();
                  }
                  else{//如果登录失败
                      Log.d("msg", msg);//打印传输回来的消息
