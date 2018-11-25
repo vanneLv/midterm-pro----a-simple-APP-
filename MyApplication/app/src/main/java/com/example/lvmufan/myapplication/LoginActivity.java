@@ -1,5 +1,6 @@
 package com.example.lvmufan.myapplication;
 
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
@@ -117,14 +118,18 @@ public class LoginActivity extends AppCompatActivity {
                     String token = jsonObject.getString("token");
                     Log.d("msg", msg);//打印传输回来的消息以及token
                     Log.d("token",token);
+                     Looper.prepare();
                      Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
                      Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
-                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                     Looper.loop();
+                     Intent intent = new Intent(LoginActivity.this,MainMenuActivity.class);
                      startActivity(intent);
                  }
                  else{//如果登录失败
                      Log.d("msg", msg);//打印传输回来的消息
+                     Looper.prepare();
                      Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
+                     Looper.loop();;
                  }
         }catch (Exception e){
             e.printStackTrace();
