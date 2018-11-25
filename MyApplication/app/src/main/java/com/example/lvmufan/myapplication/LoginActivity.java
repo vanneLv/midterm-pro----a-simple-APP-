@@ -57,6 +57,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        Button toMainButton = (Button) this.findViewById(R.id.main_button);
+        toMainButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                startActivity(intent);
+                LoginActivity.this.finish();
+            }
+        });
+
     }
 
     //process login
@@ -129,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                      bundle.putString("token", token);
                      intent.putExtras(bundle);
                      startActivity(intent);
-                     LoginActivity.this.finish();
+                     //LoginActivity.this.finish();
                  }
                  else{//如果登录失败
                      Log.d("msg", msg);//打印传输回来的消息

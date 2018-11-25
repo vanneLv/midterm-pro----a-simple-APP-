@@ -142,7 +142,7 @@ public class SignupActivity extends AppCompatActivity {
                     Log.e("status","status"+status);
                     if (status.equals("0")) {
                         Toast.makeText(SignupActivity.this, "注册成功!",Toast.LENGTH_LONG ).show();
-                        Intent intent = new Intent(SignupActivity.this,MainActivity.class);
+                        Intent intent = new Intent(SignupActivity.this,MainMenuActivity.class);
                         startActivity(intent);
                     } else {
                         Toast.makeText(SignupActivity.this, "注册失败,用户名被占用！",Toast.LENGTH_LONG ).show();

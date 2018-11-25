@@ -4,34 +4,31 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_name_entity"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="@string/nav_left_bar1" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_relation"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="@string/nav_left_bar2" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_tool"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="@string/nav_left_bar3" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/nav_left_bar_tittle">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_setting"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="@string/nav_left_bar4" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_sign_out"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="@string/nav_left_bar5" />
         </menu>
     </item>
 
