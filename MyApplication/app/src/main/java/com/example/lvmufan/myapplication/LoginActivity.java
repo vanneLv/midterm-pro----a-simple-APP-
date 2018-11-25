@@ -9,6 +9,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -76,8 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         Call call = login_client.newCall(request);
         setProgressDialouge();
-        Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-        startActivity(intent);
+
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -90,33 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string() ;
-                //parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                try{
-                    JsonObject jsonObject = (JsonObject) new JsonParser().parse(responseData);
-
-                //System.out.println("rst:" + jsonObject.get("rst").getAsInt());
-                System.out.println("msg:" + jsonObject.get("msg").getAsString());
-                System.out.println("token:" + jsonObject.get("token").getAsString());
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-                /*try {
-                    JSONObject jsonObject = new JSONObject(json_string.substring(json_string.indexOf("{"), json_string.lastIndexOf("}") + 1)) ;
-                    JSONArray server_res_array = jsonObject.getJSONArray("server_response") ;
-                    JSONObject main_obj = server_res_array.getJSONObject(0) ;
-                    final String code_string = main_obj.getString("code") ;
-                    final String message_string = main_obj.getString("message") ;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(code_string.equals("reg_true")){
-                                Toast.makeText(LoginActivity.this, message_string, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-                }
-                */
+                parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
             }
         });
 
@@ -124,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setProgressDialouge(){
-
         progressDialog = new ProgressDialog(LoginActivity.this) ;
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Connecting to server...");
@@ -133,19 +106,31 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
-    /*private void parseJSONWithJSONObject(String jsonData){
+    private void parseJSONWithJSONObject(String responseData){
+        String msg;
         try{
-            JSONArray jsonArray = new JSONArray(jsonData);
-            for(int i = 0;i < jsonArray.length();i++){
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject jsonObject = new JSONObject(responseData.substring(responseData.indexOf("{"), responseData.lastIndexOf("}") + 1)) ;
                 String message = jsonObject.getString("msg");
-                String msg = unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
-                Log.d("msg", msg);//打印传输回来的消息
-            }
+                msg = unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
+
+                 if(msg.equals("登录成功")){//如果登录成功
+                    String token = jsonObject.getString("token");
+                    Log.d("msg", msg);//打印传输回来的消息以及token
+                    Log.d("token",token);
+                     Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
+                     Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
+                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                     startActivity(intent);
+                 }
+                 else{//如果登录失败
+                     Log.d("msg", msg);//打印传输回来的消息
+                     Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
+                 }
         }catch (Exception e){
             e.printStackTrace();
         }
-    }*/
+
+    }
     public static String unicodeToUtf8(String theString) {
         char aChar;
         int len = theString.length();
