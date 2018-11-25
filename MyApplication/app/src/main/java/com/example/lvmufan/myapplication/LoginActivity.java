@@ -36,8 +36,7 @@ import android.widget.Toast;
 public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog ;
     final public static User user = new User();
-
-
+    int state = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,16 +100,30 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
+            public void onResponse(Call call, final Response response) throws IOException {
                 progressDialog.dismiss();
                 Log.d("CONNECTION", "请求成功");
-                String responseData = response.body().string() ;
+                final String responseData = response.body().string() ;
                 parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+                /*LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                });
+                if(state == 1){
+                    Intent intent = new Intent();
+                    intent.setClass(LoginActivity.this,MainMenuActivity.class);
+                    startActivity(intent);
+                    //LoginActivity.this.finish();
+                }*/
             }
+
         });
 
     }
+
+
 
     private void setProgressDialouge(){
         progressDialog = new ProgressDialog(LoginActivity.this) ;
@@ -130,13 +143,22 @@ public class LoginActivity extends AppCompatActivity {
 
                  if(msg.equals("登录成功")){//如果登录成功
                      String token = jsonObject.getString("token");
+                     state = 1;
                      Log.d("msg", msg);//打印传输回来的消息以及token
                      Log.d("token",token);
-                     Looper.prepare();
-                     Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
+                     runOnUiThread(new Runnable() {
+                         @Override
+                         public void run() {
+                             Toast.makeText(LoginActivity.this, "登录成功",Toast.LENGTH_LONG ).show();
+                         }
+                     });
+                     //Looper.prepare();
+                     //Toast.makeText(LoginActivity.this, msg,Toast.LENGTH_LONG ).show();
                      //Toast.makeText(LoginActivity.this, token,Toast.LENGTH_LONG ).show();
-                     Looper.loop();
-
+                     //Looper.loop();
+                     Intent intent = new Intent();
+                     intent.setClass(LoginActivity.this,MainMenuActivity.class);
+                     startActivity(intent);
                      user.setToken(token);
                      SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
                      SharedPreferences.Editor editor = sp.edit();
@@ -144,10 +166,6 @@ public class LoginActivity extends AppCompatActivity {
                      editor.putString("token", token);
                      editor.apply();
 
-                     Intent intent = new Intent();
-                     intent.setClass(LoginActivity.this,MainMenuActivity.class);
-                     startActivity(intent);
-                     LoginActivity.this.finish();
                  }
                  else{//如果登录失败
                      Log.d("msg", msg);//打印传输回来的消息
@@ -158,6 +176,8 @@ public class LoginActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+
+
 
     }
 
