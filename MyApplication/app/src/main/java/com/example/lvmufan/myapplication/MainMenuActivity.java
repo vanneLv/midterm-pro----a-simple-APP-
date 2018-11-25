@@ -185,31 +185,39 @@ public class MainMenuActivity extends AppCompatActivity
         String msg;
         try{
             JSONObject jsonObject = new JSONObject(responseData.substring(responseData.indexOf("{"), responseData.lastIndexOf("}") + 1)) ;
-            String message = jsonObject.getString("msg");
-            msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
 
-            if(msg.equals("尚未登录")){
-                Log.d("msg", msg);//打印传输回来的消息
-                Looper.prepare();
-                Toast.makeText(MainMenuActivity.this, msg,Toast.LENGTH_LONG ).show();
-                Looper.loop();
-                Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+            if(jsonObject.has("msg")){
+                String message = jsonObject.getString("msg");
+                msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
+                if(msg.equals("尚未登录")){
+                    Log.d("msg", msg);//打印传输回来的消息
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainMenuActivity.this, "尚未登录",Toast.LENGTH_LONG ).show();
+                        }
+                    });
+                    //Looper.prepare();
+                    //Toast.makeText(MainMenuActivity.this, msg,Toast.LENGTH_LONG ).show();
+                    //Looper.loop();
+                    Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
             else{//如果成功
-                Log.d("msg", msg);//打印传输回来的消息
                 String title = jsonObject.getString("title");
                 String content = jsonObject.getString("content");
                 String sent_id = jsonObject.getString("sent_id");
                 String doc_id = jsonObject.getString("doc_id");
+                Log.d("title",title);
+                Log.d("content",content);
+                Log.d("sent_id",sent_id);
+                Log.d("doc_id",doc_id);
 
-                TextView tv = (TextView) findViewById(R.id.content_tv);
-                tv.setText("title: "+ title+"content"+content+"sent_id"+sent_id+"doc_id"+doc_id);
+                //TextView tv = (TextView) findViewById(R.id.content_tv);
+                //tv.setText("title: "+ title+"content"+content+"sent_id"+sent_id+"doc_id"+doc_id);
 
-                Looper.prepare();
-                Toast.makeText(MainMenuActivity.this, msg,Toast.LENGTH_LONG ).show();
-                Looper.loop();
             }
         }catch (Exception e){
             e.printStackTrace();

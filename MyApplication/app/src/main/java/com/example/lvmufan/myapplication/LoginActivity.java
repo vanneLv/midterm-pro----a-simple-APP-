@@ -159,6 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                      Intent intent = new Intent();
                      intent.setClass(LoginActivity.this,MainMenuActivity.class);
                      startActivity(intent);
+
                      user.setToken(token);
                      SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
                      SharedPreferences.Editor editor = sp.edit();
