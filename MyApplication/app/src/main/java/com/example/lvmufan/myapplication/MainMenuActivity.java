@@ -58,7 +58,11 @@ import android.widget.TextView;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    int startleft[],startright[],endleft[],endright[];
+    int[] leftstart;
+    int[]leftend;
+    int[] rightstart;
+    int[] rightend;
+
     ProgressDialog progressDialog;
     User user = new User();
     TextView responseText;
@@ -200,6 +204,23 @@ public class MainMenuActivity extends AppCompatActivity
         });
 
     }
+    private void showResponseRelationEntity(final String response) {
+        //在子线程中更新UI
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // 在这里进行UI操作，将结果显示到界面上
+
+                for(int i=0;i<4;i++){
+                    SpannableStringBuilder spannable = new SpannableStringBuilder(response);
+                    //设置文字的前景色
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),leftstart[i],leftend[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),rightstart[i],rightend[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                responseText.setText(response);
+            }
+        });
+    }
 
     //获取命名实体的函数
     private void processGetNameEntityText() {
@@ -247,23 +268,7 @@ public class MainMenuActivity extends AppCompatActivity
         });
     }
 
-    private void showResponseRelationEntity(final String response) {
-        //在子线程中更新UI
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // 在这里进行UI操作，将结果显示到界面上
 
-                for(int i=0;i<4;i++){
-                    SpannableStringBuilder spannable = new SpannableStringBuilder(response);
-                    //设置文字的前景色
-                    spannable.setSpan(new ForegroundColorSpan(Color.RED),startleft[i],endleft[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan(new ForegroundColorSpan(Color.RED),startright[i],endright[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                responseText.setText(response);
-            }
-        });
-    }
     //用户登出操作的函数
     private void processSignOut() {
         OkHttpClient sign_out = new OkHttpClient();//用okhttp的网络架构进行登录
@@ -335,14 +340,15 @@ public class MainMenuActivity extends AppCompatActivity
             }
             else{//如果成功
                 if(jsonObject.has("triples")){
-                    JSONArray triplesJSArray = jsonObject.getJSONArray("triples");
+
+                    JSONObject jsonObject1 = jsonObject.getJSONObject("triples");
+                    JSONArray triplesJSArray = jsonObject1.getJSONArray("triples");
                     for(int i=0;i<triplesJSArray.length();i++){
                         JSONObject triplesJSON = triplesJSArray.getJSONObject(i);
-                        startleft[i] = triplesJSON.getInt("left_e_start");
-                        startright[i] = triplesJSON.getInt("left_e_end");
-                        endleft[i] = triplesJSON.getInt("right_e_start");
-                        endright[i] = triplesJSON.getInt("right_e_end");
-                        Log.d(String.valueOf(startleft[i]), "parseJSONWithJSONObject_get: ");
+                        leftstart[i] = triplesJSON.getInt("left_e_start");
+                        leftend[i] = triplesJSON.getInt("left_e_end");
+                        rightstart[i] = triplesJSON.getInt("right_e_start");
+                        rightend[i] = triplesJSON.getInt("right_e_end");
                     }//存储四组左右起始点信息，为文本高亮做准备
 
                     String doc_id = jsonObject.getString("doc_id");
@@ -350,6 +356,7 @@ public class MainMenuActivity extends AppCompatActivity
                     String title = jsonObject.getString("title");
                     String sent_ctx = jsonObject.getString("sent_ctx");
                     String triples = jsonObject.getString("triples");
+
                     Log.d("doc_id",doc_id);
                     Log.d("sent_id",sent_id);
                     Log.d("title",title);
