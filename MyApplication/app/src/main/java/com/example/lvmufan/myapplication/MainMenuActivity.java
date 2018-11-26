@@ -3,11 +3,15 @@ package com.example.lvmufan.myapplication;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,10 +26,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.BreakIterator;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,9 +42,23 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import android.content.SharedPreferences;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+
+
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    int startleft[],startright[],endleft[],endright[];
     ProgressDialog progressDialog;
     User user = new User();
     TextView responseText;
@@ -48,7 +68,17 @@ public class MainMenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         responseText = (TextView) findViewById(R.id.response_content);
-        responseText.setMovementMethod(ScrollingMovementMethod.getInstance());
+        responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
+
+        //SpannableString s = new SpannableString(getResources().getString(R.string.));
+        /*Pattern p = Pattern.compile("abc");
+        SpannableStringBuilder style=new SpannableStringBuilder(strs);
+        style.setSpan(new BackgroundColorSpan(Color.RED),start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        style.setSpan(new ForegroundColorSpan(Color.RED),7,9,Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        textview.setText(style);*/
+
+        //Matcher m = p.matcher(s);
+
 
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
@@ -139,7 +169,7 @@ public class MainMenuActivity extends AppCompatActivity
     private void processGetRelationEntityText() {
         OkHttpClient get_triples = new OkHttpClient();//用okhttp的网络架构进行登录
 
-        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
                 .add("token", user.getToken())
                 .build();
 
@@ -165,7 +195,7 @@ public class MainMenuActivity extends AppCompatActivity
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
                 String message = Message.unicodeToUtf8(responseData);
-                showResponse(message);
+                showResponseRelationEntity(message);
             }
         });
 
@@ -175,7 +205,7 @@ public class MainMenuActivity extends AppCompatActivity
     private void processGetNameEntityText() {
         OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
 
-        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
                 .add("token", user.getToken())
                 .build();
 
@@ -197,15 +227,16 @@ public class MainMenuActivity extends AppCompatActivity
             public void onResponse(Call call, Response response) throws IOException {
 
                 progressDialog.dismiss();
+
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
                 String message = Message.unicodeToUtf8(responseData);
-                showResponse(message);
+                showResponseNameEntity(message);
             }
         });
     }
-    private void showResponse(final String response) {
+    private void showResponseNameEntity(final String response) {
         //在子线程中更新UI
         runOnUiThread(new Runnable() {
             @Override
@@ -216,6 +247,23 @@ public class MainMenuActivity extends AppCompatActivity
         });
     }
 
+    private void showResponseRelationEntity(final String response) {
+        //在子线程中更新UI
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // 在这里进行UI操作，将结果显示到界面上
+
+                for(int i=0;i<4;i++){
+                    SpannableStringBuilder spannable = new SpannableStringBuilder(response);
+                    //设置文字的前景色
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),startleft[i],endleft[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),startright[i],endright[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                responseText.setText(response);
+            }
+        });
+    }
     //用户登出操作的函数
     private void processSignOut() {
         OkHttpClient sign_out = new OkHttpClient();//用okhttp的网络架构进行登录
@@ -259,7 +307,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void parseJSONWithJSONObject_get(String responseData){
         try{
-            JSONObject jsonObject = new JSONObject(responseData.substring(responseData.indexOf("{"), responseData.lastIndexOf("}") + 1)) ;
+            JSONObject jsonObject = new JSONObject(responseData) ;
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
                 String msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
@@ -287,6 +335,16 @@ public class MainMenuActivity extends AppCompatActivity
             }
             else{//如果成功
                 if(jsonObject.has("triples")){
+                    JSONArray triplesJSArray = jsonObject.getJSONArray("triples");
+                    for(int i=0;i<triplesJSArray.length();i++){
+                        JSONObject triplesJSON = triplesJSArray.getJSONObject(i);
+                        startleft[i] = triplesJSON.getInt("left_e_start");
+                        startright[i] = triplesJSON.getInt("left_e_end");
+                        endleft[i] = triplesJSON.getInt("right_e_start");
+                        endright[i] = triplesJSON.getInt("right_e_end");
+                        Log.d(String.valueOf(startleft[i]), "parseJSONWithJSONObject_get: ");
+                    }//存储四组左右起始点信息，为文本高亮做准备
+
                     String doc_id = jsonObject.getString("doc_id");
                     String sent_id = jsonObject.getString("sent_id");
                     String title = jsonObject.getString("title");
