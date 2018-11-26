@@ -14,6 +14,18 @@
         android:orientation="vertical">
 
         <TextView
+        android:id="@+id/response_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollbars="vertical"
+        android:singleLine="false"
+        android:textSize="30sp"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:text="实体标注与关系标注"/>
+        <TextView
             android:id="@+id/response_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +36,7 @@
             android:singleLine="false"
             android:textSize="30sp"
             android:layout_margin="@dimen/activity_horizontal_margin"
-            android:text="@string/welcome_words"/>
+            android:text="输入相应文字可分别对人名和职位进行标注"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

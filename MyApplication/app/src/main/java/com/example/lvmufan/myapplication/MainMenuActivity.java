@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ import android.text.SpannableStringBuilder;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    TextView responseTitle;
     TextView responseText;
     ProgressDialog progressDialog;
     User user = new User();
@@ -51,6 +52,7 @@ public class MainMenuActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        responseTitle = (TextView) findViewById(R.id.response_title);
         responseText = (TextView) findViewById(R.id.response_content);
         responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
 
@@ -220,19 +222,25 @@ public class MainMenuActivity extends AppCompatActivity
 
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
+                String responseContent = null,responseTitle = null;
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                String message = MyMessageTools.unicodeToUtf8(responseData);
-                showResponseNameEntity(message);
+                responseTitle = MyMessageTools.getTitleFromResponse(responseData);
+                responseContent = MyMessageTools.getContentFromResponse(responseData);
+
+                String message1 = MyMessageTools.unicodeToUtf8(responseTitle);
+                String message2 = MyMessageTools.unicodeToUtf8(responseContent);
+                showResponseNameEntity(message1,message2);
             }
         });
     }
-    private void showResponseNameEntity(final String response) {
+    private void showResponseNameEntity(final String responsetitle,final String responseContent) {
         //在子线程中更新UI
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // 在这里进行UI操作，将结果显示到界面上
-                responseText.setText(response);
+                responseTitle.setText(responsetitle);
+                responseText.setText(responseContent);
             }
         });
     }
