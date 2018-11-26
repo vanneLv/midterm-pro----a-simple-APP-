@@ -60,15 +60,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button toMainButton = (Button) this.findViewById(R.id.main_button);
-        toMainButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                startActivity(intent);
-            }
-        });
-
     }
 
     //process login

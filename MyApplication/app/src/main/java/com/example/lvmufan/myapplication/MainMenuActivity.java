@@ -41,7 +41,6 @@ public class MainMenuActivity extends AppCompatActivity
 
     ProgressDialog progressDialog;
     User user = new User();
-    String token;
     TextView responseText;
 
     @Override
@@ -50,10 +49,10 @@ public class MainMenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_menu);
         responseText = (TextView) findViewById(R.id.response_content);
         responseText.setMovementMethod(ScrollingMovementMethod.getInstance());
+
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
         user.setToken(sp.getString("token"," "));
-        //token = sp.getString("token",null);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -120,15 +119,15 @@ public class MainMenuActivity extends AppCompatActivity
             //handle the name_entity
             processGetNameEntityText();
         } else if (id == R.id.nav_relation) {
-            processGetRelationEntityText();
-
+            //handle the relation entity
+            //processGetRelationEntityText();
         } else if (id == R.id.nav_tool) {
 
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_sign_out) {
-            //processSignOut();
-
+            //user sign out
+            processSignOut();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -140,6 +139,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     }
 
+    //获取命名实体的函数
     private void processGetNameEntityText() {
         OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
 
@@ -153,7 +153,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = get_entity.newCall(request);
-        setProgressDialouge();
+        setProgressDialog();
 
         call.enqueue(new Callback() {
             @Override
@@ -167,7 +167,7 @@ public class MainMenuActivity extends AppCompatActivity
                 progressDialog.dismiss();
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
-                parseJSONWithJSONObject(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+                parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
                 String message = Message.unicodeToUtf8(responseData);
                 showResponse(message);
             }
@@ -184,11 +184,39 @@ public class MainMenuActivity extends AppCompatActivity
         });
     }
 
-    private void processSignOut() {//} throws IOException {
+    //用户登出操作的函数
+    private void processSignOut() {
+        OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
+
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
+                .add("token", user.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://10.15.82.223:9090/app_get_data/app_logout")//指定访问的服务器地址
+                .post(postBody)
+                .build();
+
+        Call call = get_entity.newCall(request);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CONNECTION", "请求失败 !!");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                Log.d("CONNECTION", "请求成功");
+                String responseData = response.body().string();
+                parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+            }
+        });
 
     }
 
-    private void setProgressDialouge(){
+    private void setProgressDialog(){
         progressDialog = new ProgressDialog(MainMenuActivity.this) ;
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Getting the entity...");
@@ -197,13 +225,12 @@ public class MainMenuActivity extends AppCompatActivity
         progressDialog.show();
     }
 
-    private void parseJSONWithJSONObject(String responseData){
-        String msg = null;
+    private void parseJSONWithJSONObject_get(String responseData){
         try{
             JSONObject jsonObject = new JSONObject(responseData.substring(responseData.indexOf("{"), responseData.lastIndexOf("}") + 1)) ;
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
-                msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
+                String msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
                 if(msg.equals("尚未登录")){
                     Log.d("msg", msg);//打印传输回来的消息
                     runOnUiThread(new Runnable() {
@@ -212,10 +239,19 @@ public class MainMenuActivity extends AppCompatActivity
                             Toast.makeText(MainMenuActivity.this, "尚未登录",Toast.LENGTH_LONG ).show();
                         }
                     });
-                    Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
                 }
+                else if(msg.equals("登出成功")){
+                    Log.d("msg", msg);//打印传输回来的消息
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainMenuActivity.this, "登出成功",Toast.LENGTH_LONG ).show();
+                        }
+                    });
+                }
+                Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
             else{//如果成功
                 String title = jsonObject.getString("title");
@@ -231,4 +267,5 @@ public class MainMenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
 }

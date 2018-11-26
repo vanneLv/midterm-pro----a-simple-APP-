@@ -22,7 +22,7 @@
             android:focusableInTouchMode="true"
             android:scrollbars="vertical"
             android:singleLine="false"
-            android:textSize="35sp"
+            android:textSize="30sp"
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:text="@string/welcome_words"/>
     </LinearLayout>
