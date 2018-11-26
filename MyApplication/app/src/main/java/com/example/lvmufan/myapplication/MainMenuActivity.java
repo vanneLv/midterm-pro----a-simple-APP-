@@ -42,9 +42,9 @@ import android.text.SpannableStringBuilder;
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    TextView responseText;
     ProgressDialog progressDialog;
     User user = new User();
-    TextView responseText;
     HighlightStructure highlight = new HighlightStructure();
 
     @Override
@@ -53,16 +53,6 @@ public class MainMenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_menu);
         responseText = (TextView) findViewById(R.id.response_content);
         responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
-
-        //SpannableString s = new SpannableString(getResources().getString(R.string.));
-        /*Pattern p = Pattern.compile("abc");
-        SpannableStringBuilder style=new SpannableStringBuilder(strs);
-        style.setSpan(new BackgroundColorSpan(Color.RED),start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        style.setSpan(new ForegroundColorSpan(Color.RED),7,9,Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-        textview.setText(style);*/
-
-        //Matcher m = p.matcher(s);
-
 
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
@@ -178,7 +168,7 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                String message = MyMessageTools.unicodeToUtf8(getContentFromResponse(responseData));
+                String message = MyMessageTools.unicodeToUtf8(MyMessageTools.getContentFromResponse(responseData));
                 showResponseRelationEntity(message);
             }
         });
@@ -280,15 +270,8 @@ public class MainMenuActivity extends AppCompatActivity
 
     }
 
-    private void setProgressDialog(){
-        progressDialog = new ProgressDialog(MainMenuActivity.this) ;
-        progressDialog.setTitle("Please Wait");
-        progressDialog.setMessage("Getting the data...");
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-    }
 
+    //获取JSON数据的函数
     private void parseJSONWithJSONObject_get(String responseData){
         try{
             JSONObject jsonObject = new JSONObject(responseData);
@@ -362,36 +345,15 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
-    //获取消息中的内容
-    private String getContentFromResponse(String responseData){
-        try{
-            JSONObject jsonObject = new JSONObject(responseData);
-            //实体获取
-            if(jsonObject.has("content")){
-                return jsonObject.getString("content");
-            }
-            //关系标注获取
-            else if(jsonObject.has("sent_ctx")){
-                return jsonObject.getString("sent_ctx");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return responseData;
-    }
 
-    //获取消息中的title
-    private String getTitleFromResponse(String responseData){
-        try{
-            JSONObject jsonObject = new JSONObject(responseData);
-            //实体获取
-            if(jsonObject.has("title")){
-                return jsonObject.getString("title");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return responseData;
+    //输出加载框的函数
+    private void setProgressDialog(){
+        progressDialog = new ProgressDialog(MainMenuActivity.this) ;
+        progressDialog.setTitle("Please Wait");
+        progressDialog.setMessage("Getting the data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
 }

@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         Call call = login_client.newCall(request);
-        setProgressDialouge();//显示联网状态
+        setProgressDialog();//显示联网状态
 
         call.enqueue(new Callback() {
             @Override
@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void setProgressDialouge(){//联网状态的显示
+    private void setProgressDialog(){//联网状态的显示
         progressDialog = new ProgressDialog(LoginActivity.this) ;
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Connecting to server...");

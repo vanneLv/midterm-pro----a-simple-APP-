@@ -1,8 +1,13 @@
 package com.example.lvmufan.myapplication;
 
-public class MyMessageTools {
+import android.app.ProgressDialog;
 
-    public static String unicodeToUtf8(String theString) {
+import org.json.JSONObject;
+
+class MyMessageTools {
+
+    //转中文编码
+    static String unicodeToUtf8(String theString) {
         char aChar;
         int len = theString.length();
         StringBuffer outBuffer = new StringBuffer(len);
@@ -66,5 +71,39 @@ public class MyMessageTools {
         }
         return outBuffer.toString();
     }
+
+    //获取消息中的内容
+    static String getContentFromResponse(String responseData){
+        try{
+            JSONObject jsonObject = new JSONObject(responseData);
+            //实体获取
+            if(jsonObject.has("content")){
+                return jsonObject.getString("content");
+            }
+            //关系标注获取
+            else if(jsonObject.has("sent_ctx")){
+                return jsonObject.getString("sent_ctx");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return responseData;
+    }
+
+    //获取消息中的title
+    static String getTitleFromResponse(String responseData){
+        try{
+            JSONObject jsonObject = new JSONObject(responseData);
+            //实体获取
+            if(jsonObject.has("title")){
+                return jsonObject.getString("title");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return responseData;
+    }
+
+
 
 }
