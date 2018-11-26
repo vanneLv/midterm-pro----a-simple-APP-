@@ -120,7 +120,7 @@ public class MainMenuActivity extends AppCompatActivity
             processGetNameEntityText();
         } else if (id == R.id.nav_relation) {
             //handle the relation entity
-            //processGetRelationEntityText();
+            processGetRelationEntityText();
         } else if (id == R.id.nav_tool) {
 
         } else if (id == R.id.nav_setting) {
@@ -135,7 +135,39 @@ public class MainMenuActivity extends AppCompatActivity
         return true;
     }
 
+    //获取关系标注的函数
     private void processGetRelationEntityText() {
+        OkHttpClient get_triples = new OkHttpClient();//用okhttp的网络架构进行登录
+
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
+                .add("token", user.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://10.15.82.223:9090/app_get_data/app_get_triple")//指定访问的服务器地址
+                .post(postBody)
+                .build();
+
+        Call call = get_triples.newCall(request);
+        setProgressDialog();
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CONNECTION", "请求失败 !!");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                progressDialog.dismiss();
+                Log.d("CONNECTION", "请求成功");
+                String responseData = response.body().string();
+                parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+                String message = Message.unicodeToUtf8(responseData);
+                showResponse(message);
+            }
+        });
 
     }
 
@@ -186,7 +218,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     //用户登出操作的函数
     private void processSignOut() {
-        OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
+        OkHttpClient sign_out = new OkHttpClient();//用okhttp的网络架构进行登录
 
         RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
                 .add("token", user.getToken())
@@ -197,7 +229,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .post(postBody)
                 .build();
 
-        Call call = get_entity.newCall(request);
+        Call call = sign_out.newCall(request);
 
         call.enqueue(new Callback() {
             @Override
@@ -219,7 +251,7 @@ public class MainMenuActivity extends AppCompatActivity
     private void setProgressDialog(){
         progressDialog = new ProgressDialog(MainMenuActivity.this) ;
         progressDialog.setTitle("Please Wait");
-        progressDialog.setMessage("Getting the entity...");
+        progressDialog.setMessage("Getting the data...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -254,14 +286,29 @@ public class MainMenuActivity extends AppCompatActivity
                 finish();
             }
             else{//如果成功
-                String title = jsonObject.getString("title");
-                String content = jsonObject.getString("content");
-                String sent_id = jsonObject.getString("sent_id");
-                String doc_id = jsonObject.getString("doc_id");
-                Log.d("title",title);
-                Log.d("content",content);
-                Log.d("sent_id",sent_id);
-                Log.d("doc_id",doc_id);
+                if(jsonObject.has("triples")){
+                    String doc_id = jsonObject.getString("doc_id");
+                    String sent_id = jsonObject.getString("sent_id");
+                    String title = jsonObject.getString("title");
+                    String sent_ctx = jsonObject.getString("sent_ctx");
+                    String triples = jsonObject.getString("triples");
+                    Log.d("doc_id",doc_id);
+                    Log.d("sent_id",sent_id);
+                    Log.d("title",title);
+                    Log.d("sent_ctx",sent_ctx);
+                    Log.d("triples",triples);
+                }
+                else{
+                    String title = jsonObject.getString("title");
+                    String content = jsonObject.getString("content");
+                    String sent_id = jsonObject.getString("sent_id");
+                    String doc_id = jsonObject.getString("doc_id");
+                    Log.d("title",title);
+                    Log.d("content",content);
+                    Log.d("sent_id",sent_id);
+                    Log.d("doc_id",doc_id);
+                }
+
             }
         }catch (Exception e){
             e.printStackTrace();
