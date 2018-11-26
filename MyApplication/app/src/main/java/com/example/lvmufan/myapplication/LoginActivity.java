@@ -1,20 +1,12 @@
 package com.example.lvmufan.myapplication;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -113,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         try{
                 JSONObject jsonObject = new JSONObject(responseData.substring(responseData.indexOf("{"), responseData.lastIndexOf("}") + 1)) ;
                 String message = jsonObject.getString("msg");
-                msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
+                msg = MyMessageTools.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
 
                  if(msg.equals("登录成功")){//如果登录成功
                      String token = jsonObject.getString("token");

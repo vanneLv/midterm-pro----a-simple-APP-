@@ -1,6 +1,6 @@
 package com.example.lvmufan.myapplication;
 
-public class Message {
+public class MyMessageTools {
 
     public static String unicodeToUtf8(String theString) {
         char aChar;

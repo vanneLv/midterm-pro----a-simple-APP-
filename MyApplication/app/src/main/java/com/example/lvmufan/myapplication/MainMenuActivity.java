@@ -1,15 +1,11 @@
 package com.example.lvmufan.myapplication;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -22,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,9 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.text.BreakIterator;
-import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,18 +35,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import android.content.SharedPreferences;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.TextPaint;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 
 public class MainMenuActivity extends AppCompatActivity
@@ -196,7 +178,7 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                String message = Message.unicodeToUtf8(responseData);
+                String message = MyMessageTools.unicodeToUtf8(getContentFromResponse(responseData));
                 showResponseRelationEntity(message);
             }
         });
@@ -208,13 +190,13 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void run() {
                 // 在这里进行UI操作，将结果显示到界面上
+                SpannableStringBuilder spannable = new SpannableStringBuilder(response);
                 for(int i=0;i<highlight.getLeftEnd().size();i++){
-                    SpannableStringBuilder spannable = new SpannableStringBuilder(response);
                     //设置文字的前景色
-                    spannable.setSpan(new ForegroundColorSpan(Color.RED),(int)highlight.getLeftStart().get(i),(int)highlight.getLeftEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.BLUE),(int)highlight.getLeftStart().get(i),(int)highlight.getLeftEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannable.setSpan(new ForegroundColorSpan(Color.RED),(int)highlight.getRightStart().get(i),(int)highlight.getRightEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-                responseText.setText(response);
+                responseText.setText(spannable);
             }
         });
     }
@@ -249,7 +231,7 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                String message = Message.unicodeToUtf8(responseData);
+                String message = MyMessageTools.unicodeToUtf8(responseData);
                 showResponseNameEntity(message);
             }
         });
@@ -309,10 +291,14 @@ public class MainMenuActivity extends AppCompatActivity
 
     private void parseJSONWithJSONObject_get(String responseData){
         try{
-            JSONObject jsonObject = new JSONObject(responseData) ;
+            JSONObject jsonObject = new JSONObject(responseData);
+            highlight.getLeftStart().clear();
+            highlight.getLeftEnd().clear();
+            highlight.getRightStart().clear();
+            highlight.getRightEnd().clear();
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
-                String msg = Message.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
+                String msg = MyMessageTools.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
                 if(msg.equals("尚未登录")){
                     Log.d("msg", msg);//打印传输回来的消息
                     runOnUiThread(new Runnable() {
@@ -341,6 +327,7 @@ public class MainMenuActivity extends AppCompatActivity
                     String sent_id = jsonObject.getString("sent_id");
                     String title = jsonObject.getString("title");
                     String sent_ctx = jsonObject.getString("sent_ctx");
+                    String triples = jsonObject.getString("triples");
 
                     JSONArray triplesJSArray = jsonObject.getJSONArray("triples");
                     for(int i=0;i<triplesJSArray.length();i++){
@@ -351,13 +338,12 @@ public class MainMenuActivity extends AppCompatActivity
                         highlight.getRightEnd().add(triplesJSON.getInt("right_e_end"));
                     }//存储四组左右起始点信息，为文本高亮做准备
 
-                    String triples = jsonObject.getString("triples");
-
                     Log.d("doc_id",doc_id);
                     Log.d("sent_id",sent_id);
                     Log.d("title",title);
                     Log.d("sent_ctx",sent_ctx);
                     Log.d("triples",triples);
+
                 }
                 else{
                     String title = jsonObject.getString("title");
@@ -374,6 +360,38 @@ public class MainMenuActivity extends AppCompatActivity
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    //获取消息中的内容
+    private String getContentFromResponse(String responseData){
+        try{
+            JSONObject jsonObject = new JSONObject(responseData);
+            //实体获取
+            if(jsonObject.has("content")){
+                return jsonObject.getString("content");
+            }
+            //关系标注获取
+            else if(jsonObject.has("sent_ctx")){
+                return jsonObject.getString("sent_ctx");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return responseData;
+    }
+
+    //获取消息中的title
+    private String getTitleFromResponse(String responseData){
+        try{
+            JSONObject jsonObject = new JSONObject(responseData);
+            //实体获取
+            if(jsonObject.has("title")){
+                return jsonObject.getString("title");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return responseData;
     }
 
 }
