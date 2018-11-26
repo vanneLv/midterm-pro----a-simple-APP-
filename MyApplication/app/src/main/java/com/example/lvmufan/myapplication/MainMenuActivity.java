@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.TextPaint;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -53,6 +54,9 @@ public class MainMenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         responseTitle = (TextView) findViewById(R.id.response_title);
+        TextPaint tp = responseTitle.getPaint();
+        tp.setFakeBoldText(true);//标题加粗功能
+
         responseText = (TextView) findViewById(R.id.response_content);
         responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
 
@@ -170,24 +174,26 @@ public class MainMenuActivity extends AppCompatActivity
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                String message = MyMessageTools.unicodeToUtf8(MyMessageTools.getContentFromResponse(responseData));
-                showResponseRelationEntity(message);
+                String message1 = MyMessageTools.unicodeToUtf8(MyMessageTools.getTitleFromResponse(responseData));
+                String message2 = MyMessageTools.unicodeToUtf8(MyMessageTools.getContentFromResponse(responseData));
+                showResponseRelationEntity(message1,message2);
             }
         });
 
     }
-    private void showResponseRelationEntity(final String response) {
+    private void showResponseRelationEntity(final String response_title,final String response_content) {
         //在子线程中更新UI
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // 在这里进行UI操作，将结果显示到界面上
-                SpannableStringBuilder spannable = new SpannableStringBuilder(response);
+                SpannableStringBuilder spannable = new SpannableStringBuilder(response_content);
                 for(int i=0;i<highlight.getLeftEnd().size();i++){
                     //设置文字的前景色
                     spannable.setSpan(new ForegroundColorSpan(Color.BLUE),(int)highlight.getLeftStart().get(i),(int)highlight.getLeftEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannable.setSpan(new ForegroundColorSpan(Color.RED),(int)highlight.getRightStart().get(i),(int)highlight.getRightEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
+                responseTitle.setText(response_title);
                 responseText.setText(spannable);
             }
         });
@@ -222,25 +228,21 @@ public class MainMenuActivity extends AppCompatActivity
 
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
-                String responseContent = null,responseTitle = null;
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-                responseTitle = MyMessageTools.getTitleFromResponse(responseData);
-                responseContent = MyMessageTools.getContentFromResponse(responseData);
-
-                String message1 = MyMessageTools.unicodeToUtf8(responseTitle);
-                String message2 = MyMessageTools.unicodeToUtf8(responseContent);
+                String message1 = MyMessageTools.unicodeToUtf8(MyMessageTools.getTitleFromResponse(responseData));
+                String message2 = MyMessageTools.unicodeToUtf8(MyMessageTools.getContentFromResponse(responseData));
                 showResponseNameEntity(message1,message2);
             }
         });
     }
-    private void showResponseNameEntity(final String responsetitle,final String responseContent) {
+    private void showResponseNameEntity(final String response_title,final String response_content) {
         //在子线程中更新UI
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // 在这里进行UI操作，将结果显示到界面上
-                responseTitle.setText(responsetitle);
-                responseText.setText(responseContent);
+                responseTitle.setText(response_title);
+                responseText.setText(response_content);
             }
         });
     }
