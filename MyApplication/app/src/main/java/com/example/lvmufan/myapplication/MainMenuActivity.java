@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.text.BreakIterator;
 import java.util.regex.Pattern;
 
@@ -58,14 +59,11 @@ import android.widget.TextView;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    int[] leftstart;
-    int[]leftend;
-    int[] rightstart;
-    int[] rightend;
 
     ProgressDialog progressDialog;
     User user = new User();
     TextView responseText;
+    HighlightStructure highlight = new HighlightStructure();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,12 +208,11 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void run() {
                 // 在这里进行UI操作，将结果显示到界面上
-
-                for(int i=0;i<4;i++){
+                for(int i=0;i<highlight.getLeftEnd().size();i++){
                     SpannableStringBuilder spannable = new SpannableStringBuilder(response);
                     //设置文字的前景色
-                    spannable.setSpan(new ForegroundColorSpan(Color.RED),leftstart[i],leftend[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan(new ForegroundColorSpan(Color.RED),rightstart[i],rightend[i],Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),(int)highlight.getLeftStart().get(i),(int)highlight.getLeftEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),(int)highlight.getRightStart().get(i),(int)highlight.getRightEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 responseText.setText(response);
             }
@@ -340,21 +337,20 @@ public class MainMenuActivity extends AppCompatActivity
             }
             else{//如果成功
                 if(jsonObject.has("triples")){
-
-                    JSONObject jsonObject1 = jsonObject.getJSONObject("triples");
-                    JSONArray triplesJSArray = jsonObject1.getJSONArray("triples");
-                    for(int i=0;i<triplesJSArray.length();i++){
-                        JSONObject triplesJSON = triplesJSArray.getJSONObject(i);
-                        leftstart[i] = triplesJSON.getInt("left_e_start");
-                        leftend[i] = triplesJSON.getInt("left_e_end");
-                        rightstart[i] = triplesJSON.getInt("right_e_start");
-                        rightend[i] = triplesJSON.getInt("right_e_end");
-                    }//存储四组左右起始点信息，为文本高亮做准备
-
                     String doc_id = jsonObject.getString("doc_id");
                     String sent_id = jsonObject.getString("sent_id");
                     String title = jsonObject.getString("title");
                     String sent_ctx = jsonObject.getString("sent_ctx");
+
+                    JSONArray triplesJSArray = jsonObject.getJSONArray("triples");
+                    for(int i=0;i<triplesJSArray.length();i++){
+                        JSONObject triplesJSON = triplesJSArray.getJSONObject(i);
+                        highlight.getLeftStart().add(triplesJSON.getInt("left_e_start"));
+                        highlight.getLeftEnd().add(triplesJSON.getInt("left_e_end"));
+                        highlight.getRightStart().add(triplesJSON.getInt("right_e_start"));
+                        highlight.getRightEnd().add(triplesJSON.getInt("right_e_end"));
+                    }//存储四组左右起始点信息，为文本高亮做准备
+
                     String triples = jsonObject.getString("triples");
 
                     Log.d("doc_id",doc_id);
