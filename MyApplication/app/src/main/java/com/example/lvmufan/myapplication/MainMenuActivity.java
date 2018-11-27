@@ -137,7 +137,7 @@ public class MainMenuActivity extends AppCompatActivity
                     processGetNameEntityText();
                 }
                 else if(isStateTriples){
-                    processGetRelationEntityText();
+                    processGetRelationTriplesText();
                 }
             }
         }); //等待上一页button被按的响应
@@ -150,7 +150,7 @@ public class MainMenuActivity extends AppCompatActivity
                     processGetNameEntityText();
                 }
                 else if(isStateTriples){
-                    processGetRelationEntityText();
+                    processGetRelationTriplesText();
                 }
             }
         }); //等待下一页button被按的响应
@@ -163,7 +163,7 @@ public class MainMenuActivity extends AppCompatActivity
                     processUploadNameEntityText();
                 }
                 else if(isStateTriples){
-                    processUploadRelationEntityText();
+                    processUploadRelationTriplesText();
                 }
             }
         }); //等待提交button被按的响应
@@ -217,7 +217,7 @@ public class MainMenuActivity extends AppCompatActivity
             //handle the relation entity
             isStateTriples = true;
             isStateEntity = false;
-            processGetRelationEntityText();
+            processGetRelationTriplesText();
         } else if (id == R.id.nav_tool) {
             isStateEntity = false;
             isStateTriples = false;
@@ -237,7 +237,7 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     //获取关系标注的函数
-    private void processGetRelationEntityText() {
+    private void processGetRelationTriplesText() {
         OkHttpClient get_triples = new OkHttpClient();//用okhttp的网络架构进行登录
 
         RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
@@ -250,7 +250,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = get_triples.newCall(request);
-        setProgressDialog();
+        setProgressDialog_get();
 
         call.enqueue(new Callback() {
             @Override
@@ -273,12 +273,12 @@ public class MainMenuActivity extends AppCompatActivity
                 triples.getRightEntity().toArray(rightEntity);
                 String[] relationId =new String[triples.getSize()];
                 triples.getRelationId().toArray(relationId);
-                showResponseRelationEntity(message1,message2,leftEntity,rightEntity,relationId);
+                showResponseRelationTriples(message1,message2,leftEntity,rightEntity,relationId);
             }
         });
 
     }
-    private void showResponseRelationEntity(final String response_title,final String response_content,final String[] response_leftEntity, final String[] response_rightEntity, final String[] response_relationId) {
+    private void showResponseRelationTriples(final String response_title, final String response_content, final String[] response_leftEntity, final String[] response_rightEntity, final String[] response_relationId) {
         //在子线程中更新UI
         runOnUiThread(new Runnable() {
             @Override
@@ -371,8 +371,38 @@ public class MainMenuActivity extends AppCompatActivity
         });
     }
     //上传关系标注的函数
-    private void processUploadRelationEntityText(){
+    private void processUploadRelationTriplesText(){
+        OkHttpClient upload_triples = new OkHttpClient();//用okhttp的网络架构进行登录
 
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
+                .add("triples", packJSONWithJSONObject_uploadTriples())
+                .add("token",user.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://10.15.82.223:9090/app_get_data/app_upload_triple")//指定访问的服务器地址
+                .post(postBody)
+                .build();
+
+        Call call = upload_triples.newCall(request);
+        setProgressDialog_upload();
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CONNECTION", "请求失败 !!");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                progressDialog.dismiss();
+                Log.d("CONNECTION", "请求成功");
+                String responseData = response.body().string();
+                parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+
+            }
+        });
     }
 
     //获取命名实体的函数
@@ -389,7 +419,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = get_entity.newCall(request);
-        setProgressDialog();
+        setProgressDialog_get();
 
         call.enqueue(new Callback() {
             @Override
@@ -441,7 +471,7 @@ public class MainMenuActivity extends AppCompatActivity
             }
         });
     }
-    //上传关系标注的函数
+    //上传实体标注的函数
     private void processUploadNameEntityText(){
 
     }
@@ -487,28 +517,19 @@ public class MainMenuActivity extends AppCompatActivity
             triples.clearAllArrayList();
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
-                String msg = MyMessageTools.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
-                if(msg.equals("尚未登录")){
-                    Log.d("msg", msg);//打印传输回来的消息
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainMenuActivity.this, "尚未登录",Toast.LENGTH_LONG ).show();
-                        }
-                    });
+                final String msg = MyMessageTools.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
+                Log.d("msg", msg);//打印传输回来的消息
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainMenuActivity.this,msg,Toast.LENGTH_LONG ).show();
+                    }
+                });
+                if(msg.equals("尚未登录")||msg.equals("登出成功")){
+                    Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
-                else if(msg.equals("登出成功")){
-                    Log.d("msg", msg);//打印传输回来的消息
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainMenuActivity.this, "登出成功",Toast.LENGTH_LONG ).show();
-                        }
-                    });
-                }
-                Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
             }
             else{//如果成功
                 if(jsonObject.has("triples")){
@@ -585,7 +606,7 @@ public class MainMenuActivity extends AppCompatActivity
                 jsonobject.put("right_entity", String.valueOf(triples.getRightEntity().get(i)));
                 jsonobject.put("relation_id", String.valueOf(triples.getRelationId().get(i)));
                 int cur = (Integer)triples.getChange().get(i);
-                int init = (Integer)triples.getRelationId().get(i);
+                int init = Integer.valueOf(String.valueOf(triples.getRelationId().get(i)));
                 if(cur%2 != init){
                     triples.getStatus().set(i,-1);
                 }
@@ -609,10 +630,20 @@ public class MainMenuActivity extends AppCompatActivity
     //}
 
     //输出加载框的函数
-    private void setProgressDialog(){
+    private void setProgressDialog_get(){
         progressDialog = new ProgressDialog(MainMenuActivity.this) ;
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Getting the data...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    //上传数据时输出加载框的函数
+    private void setProgressDialog_upload(){
+        progressDialog = new ProgressDialog(MainMenuActivity.this) ;
+        progressDialog.setTitle("Please Wait");
+        progressDialog.setMessage("Uploading the data...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();
