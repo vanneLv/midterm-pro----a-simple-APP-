@@ -27,6 +27,7 @@ import android.widget.Toast;
 import android.widget.TableRow;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -558,8 +559,54 @@ public class MainMenuActivity extends AppCompatActivity
         }
     }
 
+    //封装triples的JSON数据的函数
+    private String packJSONWithJSONObject_uploadTriples(){
+        JSONObject jsonToString = new JSONObject();
+        try {
+            jsonToString.put("doc_id",triples.getDoc_id());
+            jsonToString.put("sent_id",triples.getSent_id());
+            jsonToString.put("title",triples.getTitle());
+            jsonToString.put("sent_ctx",triples.getSent_ctx());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray jsonarray   = new JSONArray();
+        for(int i = 0 ; i < triples.getSize() ;i++){     //封装5个json，构成一个数组
+            JSONObject jsonobject = new JSONObject();
+            try {
+                jsonobject.put("id", String.valueOf(triples.getSub_id().get(i)));
+                jsonobject.put("left_e_start", String.valueOf(triples.getLeftStart().get(i)));
+                jsonobject.put("left_e_end", String.valueOf(triples.getLeftEnd().get(i)));
+                jsonobject.put("right_e_start", String.valueOf(triples.getRightStart().get(i)));
+                jsonobject.put("right_e_end", String.valueOf(triples.getRightEnd().get(i)));
+                jsonobject.put("relation_start", String.valueOf(triples.getRelationStart().get(i)));
+                jsonobject.put("relation_end", String.valueOf(triples.getRelationEnd().get(i)));
+                jsonobject.put("left_entity", String.valueOf(triples.getLeftEntity().get(i)));
+                jsonobject.put("right_entity", String.valueOf(triples.getRightEntity().get(i)));
+                jsonobject.put("relation_id", String.valueOf(triples.getRelationId().get(i)));
+                int cur = (Integer)triples.getChange().get(i);
+                int init = (Integer)triples.getRelationId().get(i);
+                if(cur%2 != init){
+                    triples.getStatus().set(i,-1);
+                }
+                jsonobject.put("status", String.valueOf(triples.getStatus().get(i)));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonarray.put(jsonobject);
+        }
+        try {
+            jsonToString.put("triples", jsonarray);     //给整体json前加上一个key值
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i("UPLOAD_TRIPLES", jsonToString.toString());
+        return  jsonToString.toString();
+    }
 
+    //private String packJSONWithJSONObject_uploadEntity(){
 
+    //}
 
     //输出加载框的函数
     private void setProgressDialog(){
