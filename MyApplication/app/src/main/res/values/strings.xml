@@ -46,6 +46,9 @@
     <string name="nav_left_bar5">退出</string>
     <string name="nav_left_bar_tittle">Others</string>
     <string name="welcome_words">Welcome to my APP!</string>
+    <string name="left_entity_display">左实体</string>
+    <string name="right_entity_display">右实体</string>
+    <string name="relation_display">关系</string>
 
 
 </resources>

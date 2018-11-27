@@ -7,13 +7,20 @@ public class HighlightStructure {
     private ArrayList leftEnd;
     private ArrayList rightStart;
     private ArrayList rightEnd;
+    private ArrayList leftEntity;
+    private ArrayList rightEntity;
+    private ArrayList relationId;
 
     public HighlightStructure(){
         leftStart = new ArrayList();
         leftEnd = new ArrayList();
         rightStart = new ArrayList();
         rightEnd = new ArrayList();
+        leftEntity = new ArrayList();
+        rightEntity = new ArrayList();
+        relationId = new ArrayList();
     }
+
     public ArrayList getLeftStart() {
         return leftStart;
     }
@@ -25,5 +32,14 @@ public class HighlightStructure {
     }
     public ArrayList getRightEnd() {
         return rightEnd;
+    }
+    public ArrayList getLeftEntity() {
+        return leftEntity;
+    }
+    public ArrayList getRightEntity() {
+        return rightEntity;
+    }
+    public ArrayList getRelationId() {
+        return relationId;
     }
 }

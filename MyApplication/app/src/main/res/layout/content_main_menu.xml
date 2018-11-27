@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainMenuActivity"
     tools:showIn="@layout/app_bar_main_menu">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:isScrollContainer="true">
 
         <TextView
         android:id="@+id/response_title"
@@ -22,9 +23,10 @@
         android:focusableInTouchMode="true"
         android:scrollbars="vertical"
         android:singleLine="false"
-        android:textSize="30sp"
+        android:textSize="15sp"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:text="实体标注与关系标注"/>
+
         <TextView
             android:id="@+id/response_content"
             android:layout_width="match_parent"
@@ -34,9 +36,65 @@
             android:focusableInTouchMode="true"
             android:scrollbars="vertical"
             android:singleLine="false"
-            android:textSize="30sp"
+            android:textSize="15sp"
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:text="输入相应文字可分别对人名和职位进行标注"/>
-    </LinearLayout>
 
+        <TableLayout
+            android:id="@+id/entity_relation_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TableRow
+                android:id="@+id/relation_display_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/left_entity_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:scrollbars="horizontal"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textStyle="bold"
+                    android:text="@string/left_entity_display"/>
+                <TextView
+                    android:id="@+id/right_entity_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:scrollbars="horizontal"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textStyle="bold"
+                    android:text="@string/right_entity_display"/>
+                <TextView
+                    android:id="@+id/relation_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:scrollbars="horizontal"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textStyle="bold"
+                    android:text="@string/relation_display"/>
+
+            </TableRow>
+
+        </TableLayout>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
