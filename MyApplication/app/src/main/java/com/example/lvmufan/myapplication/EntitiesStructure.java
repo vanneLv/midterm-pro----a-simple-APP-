@@ -20,7 +20,6 @@ public class EntitiesStructure {
 
     }
 
-
     public ArrayList getEntityName() {
         return EntityName;
     }
@@ -46,7 +45,9 @@ public class EntitiesStructure {
     public String getSent_id() {
         return sent_id;
     }
-
+    public void setEntitiesGroup(String entitiesGroup) {
+        this.entitiesGroup = entitiesGroup;
+    }
     public String getEntitiesGroup() {
         return entitiesGroup;
     }

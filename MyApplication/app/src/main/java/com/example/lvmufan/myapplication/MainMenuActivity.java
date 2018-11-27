@@ -90,10 +90,10 @@ public class MainMenuActivity extends AppCompatActivity
                     SpannableStringBuilder styled1 = new SpannableStringBuilder(responseText.getText());
                     styled1.setSpan(new ForegroundColorSpan(Color.RED), start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     String EntityName =  responseText.getText().toString().substring(start,end);
-                    Entities.getEntityName() = EntityName;
-                    Entities.getStart() = start;
-                    Entities.getEnd() = end;
-                    Entities.getNerTag() = "PERSON";
+                    Entities.getEntityName().add(EntityName);
+                    Entities.getStart().add(start);
+                    Entities.getEnd().add(end);
+                    Entities.getNerTag().add("PERSON");
                     Log.d(responseText.getText().toString().substring(start,end), "这是我点击标注人名后获得的字符串 ");
                     responseText.setText(styled1);//更改选中部分的颜色
                     actionMode.finish();//收起操作菜单
@@ -102,10 +102,11 @@ public class MainMenuActivity extends AppCompatActivity
                     Toast.makeText(MainMenuActivity.this, "职位", Toast.LENGTH_SHORT).show();
                     SpannableStringBuilder styled2 = new SpannableStringBuilder(responseText.getText());
                     styled2.setSpan(new ForegroundColorSpan(Color.GREEN), start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    Entities.getEntityName() = EntityName;
-                    Entities.getStart() = start;
-                    Entities.getEnd() = end;
-                    Entities.getNerTag() = "TITLE";
+                    String EntityName1 =  responseText.getText().toString().substring(start,end);
+                    Entities.getEntityName().add(EntityName1);
+                    Entities.getStart().add(start);
+                    Entities.getEnd().add(end);
+                    Entities.getNerTag().add("TITLE");
                     Log.d(responseText.getText().toString().substring(start,end), "这是我点击标注职位后获得的字符串 ");
                     responseText.setText(styled2);
                     actionMode.finish();
@@ -278,7 +279,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = get_triples.newCall(request);
-        setProgressDialog_get();
+        //setProgressDialog_get();
 
         call.enqueue(new Callback() {
             @Override
@@ -289,7 +290,7 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
@@ -413,7 +414,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = upload_triples.newCall(request);
-        setProgressDialog_upload();
+        //setProgressDialog_upload();
 
         call.enqueue(new Callback() {
             @Override
@@ -424,11 +425,11 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
-
+                processGetRelationTriplesText();
             }
         });
     }
@@ -449,7 +450,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = get_entity.newCall(request);
-        setProgressDialog_get();
+        //setProgressDialog_get();
 
         call.enqueue(new Callback() {
             @Override
@@ -460,7 +461,7 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
 
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
@@ -516,7 +517,7 @@ public class MainMenuActivity extends AppCompatActivity
                 .build();
 
         Call call = upload_entities.newCall(request);
-        setProgressDialog_upload();
+        //setProgressDialog_upload();
 
         call.enqueue(new Callback() {
             @Override
@@ -527,7 +528,7 @@ public class MainMenuActivity extends AppCompatActivity
             @Override
             public void onResponse(Call call, Response response) throws IOException {
 
-                progressDialog.dismiss();
+                //progressDialog.dismiss();
                 Log.d("CONNECTION", "请求成功");
                 String responseData = response.body().string();
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
@@ -625,12 +626,12 @@ public class MainMenuActivity extends AppCompatActivity
                 else{
                     String title = jsonObject.getString("title");
                     String content = jsonObject.getString("content");
-                    String sent_id = jsonObject.getString("sent_id");
-                    String doc_id = jsonObject.getString("doc_id");
+                    Entities.setSent_id(jsonObject.getString("sent_id"));
+                    Entities.setDoc_id(jsonObject.getString("doc_id"));
                     Log.d("title",title);
                     Log.d("content",content);
-                    Log.d("sent_id",sent_id);
-                    Log.d("doc_id",doc_id);
+                    Log.d("sent_id",Entities.getSent_id());
+                    Log.d("doc_id",Entities.getDoc_id());
                 }
 
             }
@@ -681,9 +682,14 @@ public class MainMenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
         Log.i("UPLOAD_TRIPLES", jsonToString.toString());
+        SharedPreferences sp = getSharedPreferences("upload_triples", MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("triples", jsonToString.toString());//对上传的triples进行存储
+        editor.apply();
         return  jsonToString.toString();
     }
 
+    //封装entities的JSON数据的函数
     private String packJSONWithJSONObject_uploadEntity(){
         JSONObject jsonToString = new JSONObject();
         try {
@@ -692,8 +698,8 @@ public class MainMenuActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        JSONArray jsonarray   = new JSONArray();
-        for(int i = 0 ; i < Entities.getSize() ;i++){     //封装5个json，构成一个数组
+        JSONArray jsonarray = new JSONArray();
+        for(int i = 0 ; i < Entities.getSize(); i++){     //封装5个json，构成一个数组
             JSONObject jsonobject = new JSONObject();
             try {
                 /*"EntityName": "白智理",              "Start": 154,              "End": 157,              "NerTag": "PERSON"*/
@@ -713,6 +719,10 @@ public class MainMenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
         Log.i("UPLOAD_ENTITIES", jsonToString.toString());
+        SharedPreferences sp = getSharedPreferences("upload_entities", MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("entities", jsonToString.toString());//对上传的entities进行存储
+        editor.apply();
         return  jsonToString.toString();
     }
 
