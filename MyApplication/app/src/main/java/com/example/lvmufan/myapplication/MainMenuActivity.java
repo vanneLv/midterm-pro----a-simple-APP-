@@ -27,13 +27,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -42,7 +39,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-//import android.support.v7.view.ActionMode;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,7 +53,6 @@ public class MainMenuActivity extends AppCompatActivity
     boolean isStateTriples = false;
 
     private ActionMode.Callback callback2= new ActionMode.Callback(){
-        //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             MenuInflater menuInflater = actionMode.getMenuInflater();
@@ -75,7 +70,6 @@ public class MainMenuActivity extends AppCompatActivity
             menuInflater.inflate(R.menu.selection_action_menu,menu);
             return true;
         }
-
         @Override
         public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
             //根据item的ID处理点击事件
@@ -116,9 +110,10 @@ public class MainMenuActivity extends AppCompatActivity
         }
         @Override
         public void onDestroyActionMode(ActionMode actionMode) {
-
         }
     };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,7 +262,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     //获取关系标注的函数
     private void processGetRelationTriplesText() {
-        OkHttpClient get_triples = new OkHttpClient();//用okhttp的网络架构进行登录
+        OkHttpClient get_triples = new OkHttpClient();//用okhttp的网络架构
 
         RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
                 .add("token", user.getToken())
@@ -394,16 +389,16 @@ public class MainMenuActivity extends AppCompatActivity
                             });
                         }
                     });
-
                 }
             }
         });
     }
+
     //上传关系标注的函数
     private void processUploadRelationTriplesText(){
-        OkHttpClient upload_triples = new OkHttpClient();//用okhttp的网络架构进行登录
+        OkHttpClient upload_triples = new OkHttpClient();//用okhttp的网络架构
 
-        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输信息
                 .add("triples", packJSONWithJSONObject_uploadTriples())
                 .add("token",user.getToken())
                 .build();
@@ -438,7 +433,7 @@ public class MainMenuActivity extends AppCompatActivity
 
     //获取命名实体的函数
     private void processGetNameEntityText() {
-        OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
+        OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构
 
         RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
                 .add("token", user.getToken())
@@ -503,9 +498,9 @@ public class MainMenuActivity extends AppCompatActivity
     }
     //上传实体标注的函数
     private void processUploadNameEntityText(){
-        OkHttpClient upload_entities = new OkHttpClient();//用okhttp的网络架构进行登录
+        OkHttpClient upload_entities = new OkHttpClient();//用okhttp的网络架构
 
-        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输信息
                 //.add("doc_id")
                 .add("entities", packJSONWithJSONObject_uploadEntity())
                 .add("token",user.getToken())
@@ -539,9 +534,9 @@ public class MainMenuActivity extends AppCompatActivity
 
     //用户登出操作的函数
     private void processSignOut() {
-        OkHttpClient sign_out = new OkHttpClient();//用okhttp的网络架构进行登录
+        OkHttpClient sign_out = new OkHttpClient();//用okhttp的网络架构
 
-        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输用户名和密码
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输
                 .add("token", user.getToken())
                 .build();
 
@@ -699,10 +694,9 @@ public class MainMenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
         JSONArray jsonarray = new JSONArray();
-        for(int i = 0 ; i < Entities.getSize(); i++){     //封装5个json，构成一个数组
+        for(int i = 0 ; i < Entities.getSize(); i++){
             JSONObject jsonobject = new JSONObject();
             try {
-                /*"EntityName": "白智理",              "Start": 154,              "End": 157,              "NerTag": "PERSON"*/
                 jsonobject.put("EntityName", String.valueOf(Entities.getEntityName().get(i)));
                 jsonobject.put("Start", String.valueOf(Entities.getStart().get(i)));
                 jsonobject.put("End", String.valueOf(Entities.getEnd().get(i)));
@@ -727,7 +721,7 @@ public class MainMenuActivity extends AppCompatActivity
     }
 
     //输出加载框的函数
-    private void setProgressDialog_get(){
+    /*private void setProgressDialog_get(){
         progressDialog = new ProgressDialog(MainMenuActivity.this) ;
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Getting the data...");
@@ -744,6 +738,6 @@ public class MainMenuActivity extends AppCompatActivity
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();
-    }
+    }*/
 
 }

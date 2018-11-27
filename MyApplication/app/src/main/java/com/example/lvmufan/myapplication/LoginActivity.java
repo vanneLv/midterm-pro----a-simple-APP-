@@ -1,13 +1,19 @@
 package com.example.lvmufan.myapplication;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-
-import java.io.IOException;
-
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 import org.json.JSONObject;
-
+import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -15,20 +21,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog ;
     final public static User user = new User();
-    int state = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //process login
-    private void processLogin(){//} throws IOException {
+    private void processLogin(){
         EditText usernameText = (EditText) this.findViewById(R.id.login_username);
         EditText passwordText = (EditText) this.findViewById(R.id.login_password);
         user.setUsername(usernameText.getText().toString());
@@ -109,7 +105,6 @@ public class LoginActivity extends AppCompatActivity {
 
                  if(msg.equals("登录成功")){//如果登录成功
                      String token = jsonObject.getString("token");
-                     state = 1;
                      Log.d("msg", msg);//打印传输回来的消息以及token
                      Log.d("token",token);
                      runOnUiThread(new Runnable() {
