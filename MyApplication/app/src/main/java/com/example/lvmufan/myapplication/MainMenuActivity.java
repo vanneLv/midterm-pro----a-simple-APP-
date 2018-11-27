@@ -52,6 +52,7 @@ public class MainMenuActivity extends AppCompatActivity
     ProgressDialog progressDialog;
     User user = new User();
     TriplesStructure triples = new TriplesStructure();
+    EntitiesStructure Entities = new EntitiesStructure();
     boolean isStateEntity = false;
     boolean isStateTriples = false;
 
@@ -81,15 +82,19 @@ public class MainMenuActivity extends AppCompatActivity
             int start = responseText.getSelectionStart();//获取选择部分的起始信息
             int end = responseText.getSelectionEnd();
             // 获得选中的字符
-            String selected_str = responseText.getText().toString().substring(start, end);//获取选择部分的文字
             System.out.print(start);
             System.out.print(end);
             switch (menuItem.getItemId()){
                 case R.id.name:
                     Toast.makeText(MainMenuActivity.this, "人名", Toast.LENGTH_SHORT).show();
                     SpannableStringBuilder styled1 = new SpannableStringBuilder(responseText.getText());
-
                     styled1.setSpan(new ForegroundColorSpan(Color.RED), start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    String EntityName =  responseText.getText().toString().substring(start,end);
+                    Entities.getEntityName() = EntityName;
+                    Entities.getStart() = start;
+                    Entities.getEnd() = end;
+                    Entities.getNerTag() = "PERSON";
+                    Log.d(responseText.getText().toString().substring(start,end), "这是我点击标注人名后获得的字符串 ");
                     responseText.setText(styled1);//更改选中部分的颜色
                     actionMode.finish();//收起操作菜单
                     break;
@@ -97,6 +102,11 @@ public class MainMenuActivity extends AppCompatActivity
                     Toast.makeText(MainMenuActivity.this, "职位", Toast.LENGTH_SHORT).show();
                     SpannableStringBuilder styled2 = new SpannableStringBuilder(responseText.getText());
                     styled2.setSpan(new ForegroundColorSpan(Color.GREEN), start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    Entities.getEntityName() = EntityName;
+                    Entities.getStart() = start;
+                    Entities.getEnd() = end;
+                    Entities.getNerTag() = "TITLE";
+                    Log.d(responseText.getText().toString().substring(start,end), "这是我点击标注职位后获得的字符串 ");
                     responseText.setText(styled2);
                     actionMode.finish();
                     break;
@@ -128,10 +138,8 @@ public class MainMenuActivity extends AppCompatActivity
         tp3.setFakeBoldText(true);
 
         responseText = (TextView) findViewById(R.id.response_content);
-        //responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
         responseText.setCustomSelectionActionModeCallback(callback2);
         tableLayout = (TableLayout) findViewById(R.id.entity_relation_display);
-        //responseText.setText(responseText.spannable);
         responseText.setMovementMethod(LinkMovementMethod.getInstance());
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
@@ -142,7 +150,7 @@ public class MainMenuActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -425,6 +433,8 @@ public class MainMenuActivity extends AppCompatActivity
         });
     }
 
+
+
     //获取命名实体的函数
     private void processGetNameEntityText() {
         OkHttpClient get_entity = new OkHttpClient();//用okhttp的网络架构进行登录
@@ -487,13 +497,42 @@ public class MainMenuActivity extends AppCompatActivity
                         tableLayout.removeView(tableLayout.getChildAt(i));
                     }
                 }
-
             }
         });
     }
     //上传实体标注的函数
     private void processUploadNameEntityText(){
+        OkHttpClient upload_entities = new OkHttpClient();//用okhttp的网络架构进行登录
 
+        RequestBody postBody = new FormBody.Builder()//用formbody的形式向服务器传输token
+                //.add("doc_id")
+                .add("entities", packJSONWithJSONObject_uploadEntity())
+                .add("token",user.getToken())
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://10.15.82.223:9090/app_get_data/app_upload_entity")//指定访问的服务器地址
+                .post(postBody)
+                .build();
+
+        Call call = upload_entities.newCall(request);
+        setProgressDialog_upload();
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("CONNECTION", "请求失败 !!");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                progressDialog.dismiss();
+                Log.d("CONNECTION", "请求成功");
+                String responseData = response.body().string();
+                parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
+            }
+        });
     }
 
 
@@ -645,9 +684,37 @@ public class MainMenuActivity extends AppCompatActivity
         return  jsonToString.toString();
     }
 
-    //private String packJSONWithJSONObject_uploadEntity(){
+    private String packJSONWithJSONObject_uploadEntity(){
+        JSONObject jsonToString = new JSONObject();
+        try {
+            jsonToString.put("doc_id",Entities.getDoc_id());
+            jsonToString.put("sent_id",Entities.getSent_id());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray jsonarray   = new JSONArray();
+        for(int i = 0 ; i < Entities.getSize() ;i++){     //封装5个json，构成一个数组
+            JSONObject jsonobject = new JSONObject();
+            try {
+                /*"EntityName": "白智理",              "Start": 154,              "End": 157,              "NerTag": "PERSON"*/
+                jsonobject.put("EntityName", String.valueOf(Entities.getEntityName().get(i)));
+                jsonobject.put("Start", String.valueOf(Entities.getStart().get(i)));
+                jsonobject.put("End", String.valueOf(Entities.getEnd().get(i)));
+                jsonobject.put("NerTag", String.valueOf(Entities.getNerTag().get(i)));
 
-    //}
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            jsonarray.put(jsonobject);
+        }
+        try {
+            jsonToString.put("entities", jsonarray);     //给整体json前加上一个key值
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i("UPLOAD_ENTITIES", jsonToString.toString());
+        return  jsonToString.toString();
+    }
 
     //输出加载框的函数
     private void setProgressDialog_get(){
