@@ -60,6 +60,9 @@ public class MainMenuActivity extends AppCompatActivity
     ProgressDialog progressDialog;
     User user = new User();
     HighlightStructure highlight = new HighlightStructure();
+    boolean isStateEntity = false;
+    boolean isStateTriples = false;
+
     private ActionMode.Callback callback2= new ActionMode.Callback(){
         //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
         @Override
@@ -133,6 +136,45 @@ public class MainMenuActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Button lastPageButton = (Button) this.findViewById(R.id.last_page_button);
+        lastPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isStateEntity){
+                    processGetNameEntityText();
+                }
+                else if(isStateTriples){
+                    processGetRelationEntityText();
+                }
+            }
+        }); //等待上一页button被按的响应
+
+        Button nextPageButton = (Button) this.findViewById(R.id.next_page_button);
+        nextPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isStateEntity){
+                    processGetNameEntityText();
+                }
+                else if(isStateTriples){
+                    processGetRelationEntityText();
+                }
+            }
+        }); //等待下一页button被按的响应
+
+        Button uploadButton = (Button) this.findViewById(R.id.upload_button);
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isStateEntity){
+                    processUploadNameEntityText();
+                }
+                else if(isStateTriples){
+                    processUploadRelationEntityText();
+                }
+            }
+        }); //等待提交button被按的响应
+
     }
 
     @Override
@@ -175,13 +217,21 @@ public class MainMenuActivity extends AppCompatActivity
 
         if (id == R.id.nav_name_entity) {
             //handle the name_entity
+            isStateEntity = true;
+            isStateTriples = false;
             processGetNameEntityText();
         } else if (id == R.id.nav_relation) {
             //handle the relation entity
+            isStateTriples = true;
+            isStateEntity = false;
             processGetRelationEntityText();
         } else if (id == R.id.nav_tool) {
+            isStateEntity = false;
+            isStateTriples = false;
 
         } else if (id == R.id.nav_setting) {
+            isStateTriples = false;
+            isStateEntity = false;
 
         } else if (id == R.id.nav_sign_out) {
             //user sign out
@@ -326,6 +376,10 @@ public class MainMenuActivity extends AppCompatActivity
             }
         });
     }
+    //上传关系标注的函数
+    private void processUploadRelationEntityText(){
+
+    }
 
     //获取命名实体的函数
     private void processGetNameEntityText() {
@@ -392,6 +446,10 @@ public class MainMenuActivity extends AppCompatActivity
 
             }
         });
+    }
+    //上传关系标注的函数
+    private void processUploadNameEntityText(){
+
     }
 
 
