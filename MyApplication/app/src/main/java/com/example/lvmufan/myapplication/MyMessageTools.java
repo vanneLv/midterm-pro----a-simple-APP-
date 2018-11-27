@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.LinearLayout;
@@ -112,8 +113,7 @@ class MyMessageTools {
 
     //设置实体关系显示的文本框style，mode为0是关系，mode为1是实体
     static void setRelationViewTextStyle(TextView tv, boolean mode){
-        LinearLayout.LayoutParams lp_entity = (LinearLayout.LayoutParams) tv.getLayoutParams();
-        lp_entity.width = 0;
+        TableRow.LayoutParams lp_entity = new TableRow.LayoutParams(0,TableRow.LayoutParams.WRAP_CONTENT);
         lp_entity.weight = mode ? 3 : 2;
         lp_entity.setMargins(16,16,16,16);
         tv.setLayoutParams(lp_entity);
@@ -122,7 +122,8 @@ class MyMessageTools {
         tv.setFocusableInTouchMode(true);
         tv.setTextIsSelectable(true);
         tv.setSingleLine(true);
-        tv.setTextSize(18);
+        tv.setTextSize(20);
+        tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
     }
 
 }

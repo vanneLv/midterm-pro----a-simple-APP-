@@ -1,6 +1,7 @@
 package com.example.lvmufan.myapplication;
 
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetHostView;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.ActionMode;
+//import android.support.v7.view.ActionMode;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -98,9 +100,20 @@ public class MainMenuActivity extends AppCompatActivity
         TextPaint tp = responseTitle.getPaint();
         tp.setFakeBoldText(true);//标题加粗功能
 
+        //关系标注标题加粗
+        TextView relationTitle1 = (TextView) findViewById(R.id.left_entity_title);
+        TextPaint tp1 = relationTitle1.getPaint();
+        tp1.setFakeBoldText(true);
+        TextView relationTitle2 = (TextView) findViewById(R.id.right_entity_title);
+        TextPaint tp2 = relationTitle2.getPaint();
+        tp2.setFakeBoldText(true);
+        TextView relationTitle3 = (TextView) findViewById(R.id.relation_title);
+        TextPaint tp3 = relationTitle3.getPaint();
+        tp3.setFakeBoldText(true);
+
         responseText = (TextView) findViewById(R.id.response_content);
         //responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
-        responseText.setCustomSelectionActionModeCallback( callback2);
+        responseText.setCustomSelectionActionModeCallback(callback2);
         tableLayout = (TableLayout) findViewById(R.id.entity_relation_display);
 
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
@@ -245,6 +258,11 @@ public class MainMenuActivity extends AppCompatActivity
                 responseTitle.setText(response_title);
                 responseText.setText(spannable);
 
+                View divide = (View)findViewById(R.id.divider);
+                divide.setVisibility(View.VISIBLE);
+                TableRow table_title = (TableRow)findViewById(R.id.relation_display_title);
+                table_title.setVisibility(View.VISIBLE);
+
                 //清空上次操作
                 int len = tableLayout.getChildCount();
                 if (len > 1) { //这里的判断我是为了实现动态更新数据...保留标题
@@ -256,54 +274,25 @@ public class MainMenuActivity extends AppCompatActivity
 
                 for(int i = 0; i < highlight.getRelationId().size();i++){
                     TableRow row = new TableRow(getApplicationContext());
+                    TableLayout.LayoutParams row_style = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,TableLayout.LayoutParams.WRAP_CONTENT);
+                    row_style.setMargins(16,16,16,16);
+                    row.setLayoutParams(row_style);
+                    row.setGravity(View.TEXT_ALIGNMENT_CENTER);
 
                     TextView left_entity = new TextView(getApplicationContext());
-                    //TableRow.LayoutParams lp_entity = (TableRow.LayoutParams) left_entity.getLayoutParams();
-                    //lp_entity.width = 0;
-                    //lp_entity.weight = 3;
-                    //lp_entity.setMargins(16,16,16,16);
-                    //left_entity.setLayoutParams(lp_entity);
-                    left_entity.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                    left_entity.setFocusable(true);
-                    left_entity.setFocusableInTouchMode(true);
-                    left_entity.setTextIsSelectable(true);
-                    left_entity.setSingleLine(true);
-                    left_entity.setTextSize(18);
-                    //MyMessageTools.setRelationViewTextStyle(left_entity,true);
+                    MyMessageTools.setRelationViewTextStyle(left_entity,true);
                     left_entity.setTextColor(Color.BLUE);
                     left_entity.setText(response_leftEntity[i]);
                     row.addView(left_entity);
 
                     TextView right_entity = new TextView(getApplicationContext());
-                    //TableRow.LayoutParams lp_entity2 = (TableRow.LayoutParams) right_entity.getLayoutParams();
-                    //lp_entity2.width = 0;
-                    //lp_entity2.weight = 3;
-                    //lp_entity2.setMargins(16,16,16,16);
-                    //right_entity.setLayoutParams(lp_entity2);
-                    right_entity.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                    right_entity.setFocusable(true);
-                    right_entity.setFocusableInTouchMode(true);
-                    right_entity.setTextIsSelectable(true);
-                    right_entity.setSingleLine(true);
-                    right_entity.setTextSize(18);
-                    //MyMessageTools.setRelationViewTextStyle(right_entity,true);
+                    MyMessageTools.setRelationViewTextStyle(right_entity,true);
                     right_entity.setTextColor(Color.RED);
                     right_entity.setText(response_rightEntity[i]);
                     row.addView(right_entity);
 
                     TextView relation = new TextView(getApplicationContext());
-                    //TableRow.LayoutParams lp_relation = (TableRow.LayoutParams) relation.getLayoutParams();
-                    //lp_relation.width = 0;
-                    //lp_relation.weight = 2;
-                    //lp_relation.setMargins(16,16,16,16);
-                    //relation.setLayoutParams(lp_relation);
-                    relation.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                    relation.setFocusable(true);
-                    relation.setFocusableInTouchMode(true);
-                    relation.setTextIsSelectable(true);
-                    relation.setSingleLine(true);
-                    relation.setTextSize(18);
-                    //MyMessageTools.setRelationViewTextStyle(relation,false);
+                    MyMessageTools.setRelationViewTextStyle(relation,false);
                     int relation_id = Integer.parseInt(response_relationId[i]);
                     String relation_text = null;
                     if(relation_id == 0){
@@ -317,6 +306,7 @@ public class MainMenuActivity extends AppCompatActivity
                     row.addView(relation);
 
                     tableLayout.addView(row);
+
                 }
             }
         });
@@ -367,6 +357,20 @@ public class MainMenuActivity extends AppCompatActivity
                 responseTitle.setText(response_title);
                 responseText.setText(response_content);
 
+                View divide = (View)findViewById(R.id.divider);
+                divide.setVisibility(View.INVISIBLE);
+                TableRow table_title = (TableRow)findViewById(R.id.relation_display_title);
+                table_title.setVisibility(View.INVISIBLE);
+
+                //清空上次操作
+                int len = tableLayout.getChildCount();
+                if (len > 1) { //这里的判断我是为了实现动态更新数据...保留标题
+                    //必须从后面减去子元素
+                    for (int i = len + 1; i > 0; i--) {
+                        tableLayout.removeView(tableLayout.getChildAt(i));
+                    }
+                }
+
             }
         });
     }
@@ -413,6 +417,9 @@ public class MainMenuActivity extends AppCompatActivity
             highlight.getLeftEnd().clear();
             highlight.getRightStart().clear();
             highlight.getRightEnd().clear();
+            highlight.getLeftEntity().clear();
+            highlight.getRightEntity().clear();
+            highlight.getRelationId().clear();
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
                 String msg = MyMessageTools.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
