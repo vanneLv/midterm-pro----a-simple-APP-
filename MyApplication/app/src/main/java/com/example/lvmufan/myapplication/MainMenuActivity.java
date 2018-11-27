@@ -1,19 +1,13 @@
 package com.example.lvmufan.myapplication;
 
 import android.app.ProgressDialog;
-import android.appwidget.AppWidgetHostView;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 
 import android.text.TextPaint;
-import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.ActionMode;
 //import android.support.v7.view.ActionMode;
 import android.view.MenuInflater;
@@ -27,14 +21,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.TableRow;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -59,7 +51,7 @@ public class MainMenuActivity extends AppCompatActivity
     TableLayout tableLayout;
     ProgressDialog progressDialog;
     User user = new User();
-    HighlightStructure highlight = new HighlightStructure();
+    TriplesStructure triples = new TriplesStructure();
     boolean isStateEntity = false;
     boolean isStateTriples = false;
 
@@ -274,12 +266,12 @@ public class MainMenuActivity extends AppCompatActivity
                 parseJSONWithJSONObject_get(responseData);//调用parseJSONWithJSONObject()方法来解析数据
                 String message1 = MyMessageTools.unicodeToUtf8(MyMessageTools.getTitleFromResponse(responseData));
                 String message2 = MyMessageTools.unicodeToUtf8(MyMessageTools.getContentFromResponse(responseData));
-                String[] leftEntity =new String[highlight.getLeftEntity().size()];
-                highlight.getLeftEntity().toArray(leftEntity);
-                String[] rightEntity =new String[highlight.getRightEntity().size()];
-                highlight.getRightEntity().toArray(rightEntity);
-                String[] relationId =new String[highlight.getRelationId().size()];
-                highlight.getRelationId().toArray(relationId);
+                String[] leftEntity =new String[triples.getSize()];
+                triples.getLeftEntity().toArray(leftEntity);
+                String[] rightEntity =new String[triples.getSize()];
+                triples.getRightEntity().toArray(rightEntity);
+                String[] relationId =new String[triples.getSize()];
+                triples.getRelationId().toArray(relationId);
                 showResponseRelationEntity(message1,message2,leftEntity,rightEntity,relationId);
             }
         });
@@ -292,10 +284,10 @@ public class MainMenuActivity extends AppCompatActivity
             public void run() {
                 // 在这里进行UI操作，将结果显示到界面上
                 SpannableStringBuilder spannable = new SpannableStringBuilder(response_content);
-                for(int i=0;i<highlight.getLeftEnd().size();i++){
+                for(int i = 0; i< triples.getSize(); i++){
                     //设置文字的前景色
-                    spannable.setSpan(new ForegroundColorSpan(Color.BLUE),(int)highlight.getLeftStart().get(i),(int)highlight.getLeftEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannable.setSpan(new ForegroundColorSpan(Color.RED),(int)highlight.getRightStart().get(i),(int)highlight.getRightEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.BLUE),(int) triples.getLeftStart().get(i),(int) triples.getLeftEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(new ForegroundColorSpan(Color.RED),(int) triples.getRightStart().get(i),(int) triples.getRightEnd().get(i),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 responseTitle.setText(response_title);
                 responseText.setText(spannable);
@@ -318,7 +310,7 @@ public class MainMenuActivity extends AppCompatActivity
                     }
                 }
 
-                for(int i = 0; i < highlight.getRelationId().size();i++){
+                for(int i = 0; i < triples.getSize(); i++){
                     TableRow row = new TableRow(getApplicationContext());
                     TableLayout.LayoutParams row_style = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,TableLayout.LayoutParams.WRAP_CONTENT);
                     row_style.setMargins(16,16,16,16);
@@ -352,15 +344,16 @@ public class MainMenuActivity extends AppCompatActivity
                     row.addView(relation);
 
                     tableLayout.addView(row);
+                    final int finalI = i;
                     relation.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    int temp = highlight.getChange();
+                                    int temp = (Integer) triples.getChange().get(finalI);
                                     temp++;
-                                    highlight.setChange(temp);
+                                    triples.getChange().set(finalI,temp);
                                     if(temp%2==0){
                                         relation.setText(MyMessageTools.unicodeToUtf8("任职"));
                                     }
@@ -490,13 +483,7 @@ public class MainMenuActivity extends AppCompatActivity
     private void parseJSONWithJSONObject_get(String responseData){
         try{
             JSONObject jsonObject = new JSONObject(responseData);
-            highlight.getLeftStart().clear();
-            highlight.getLeftEnd().clear();
-            highlight.getRightStart().clear();
-            highlight.getRightEnd().clear();
-            highlight.getLeftEntity().clear();
-            highlight.getRightEntity().clear();
-            highlight.getRelationId().clear();
+            triples.clearAllArrayList();
             if(jsonObject.has("msg")){
                 String message = jsonObject.getString("msg");
                 String msg = MyMessageTools.unicodeToUtf8(message);//对数据进行Unicode转码为中文字符
@@ -524,30 +511,34 @@ public class MainMenuActivity extends AppCompatActivity
             }
             else{//如果成功
                 if(jsonObject.has("triples")){
-                    String doc_id = jsonObject.getString("doc_id");
-                    String sent_id = jsonObject.getString("sent_id");
-                    String title = jsonObject.getString("title");
-                    String sent_ctx = jsonObject.getString("sent_ctx");
-                    String triples = jsonObject.getString("triples");
+                    triples.setDoc_id(jsonObject.getString("doc_id"));
+                    triples.setSent_id(jsonObject.getString("sent_id"));
+                    triples.setTitle(jsonObject.getString("title"));
+                    triples.setSent_ctx(jsonObject.getString("sent_ctx"));
+                    triples.setTriplesGroup(jsonObject.getString("triples"));
 
                     JSONArray triplesJSArray = jsonObject.getJSONArray("triples");
                     for(int i=0;i<triplesJSArray.length();i++){
                         JSONObject triplesJSON = triplesJSArray.getJSONObject(i);
-                        highlight.getLeftStart().add(triplesJSON.getInt("left_e_start"));
-                        highlight.getLeftEnd().add(triplesJSON.getInt("left_e_end"));
-                        highlight.getRightStart().add(triplesJSON.getInt("right_e_start"));
-                        highlight.getRightEnd().add(triplesJSON.getInt("right_e_end"));
-                        highlight.getLeftEntity().add(triplesJSON.getString("left_entity"));
-                        highlight.getRightEntity().add(triplesJSON.getString("right_entity"));
-                        highlight.getRelationId().add(triplesJSON.getString("relation_id"));
-                        highlight.setChange(triplesJSON.getInt("relation_id"));
+                        triples.getSub_id().add(triplesJSON.getString("id"));
+                        triples.getLeftStart().add(triplesJSON.getInt("left_e_start"));
+                        triples.getLeftEnd().add(triplesJSON.getInt("left_e_end"));
+                        triples.getRightStart().add(triplesJSON.getInt("right_e_start"));
+                        triples.getRightEnd().add(triplesJSON.getInt("right_e_end"));
+                        triples.getRelationStart().add(triplesJSON.getInt("relation_start"));
+                        triples.getRelationEnd().add(triplesJSON.getInt("relation_end"));
+                        triples.getLeftEntity().add(triplesJSON.getString("left_entity"));
+                        triples.getRightEntity().add(triplesJSON.getString("right_entity"));
+                        triples.getRelationId().add(triplesJSON.getString("relation_id"));
+                        triples.getChange().add(triplesJSON.getInt("relation_id"));
+                        triples.getStatus().add(1);
                     }//存储四组左右起始点信息，为文本高亮做准备
 
-                    Log.d("doc_id",doc_id);
-                    Log.d("sent_id",sent_id);
-                    Log.d("title",title);
-                    Log.d("sent_ctx",sent_ctx);
-                    Log.d("triples",triples);
+                    Log.d("doc_id",triples.getDoc_id());
+                    Log.d("sent_id",triples.getSent_id());
+                    Log.d("title",triples.getTitle());
+                    Log.d("sent_ctx",triples.getSent_ctx());
+                    Log.d("triples",triples.getTriplesGroup());
 
                 }
                 else{
@@ -566,6 +557,8 @@ public class MainMenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+
 
 
     //输出加载框的函数
