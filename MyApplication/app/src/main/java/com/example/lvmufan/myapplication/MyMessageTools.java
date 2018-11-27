@@ -1,6 +1,7 @@
 package com.example.lvmufan.myapplication;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
@@ -124,6 +125,10 @@ class MyMessageTools {
         tv.setSingleLine(true);
         tv.setTextSize(20);
         tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        if(!mode){
+            tv.setClickable(true);
+            tv.setBackgroundColor(Color.LTGRAY);
+        }
     }
 
 }

@@ -20,6 +20,16 @@
         android:orientation="vertical"
         android:isScrollContainer="true">
 
+        <Button
+            android:id="@+id/last_page_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/toLastPage"
+            android:textStyle="bold"
+            android:visibility="invisible"/>
+
         <TextView
         android:id="@+id/response_title"
         android:textIsSelectable="true"
@@ -48,11 +58,14 @@
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:text="选中文字后点击人名或职位可分别对人名和职位进行实体标注"/>
 
-        <View
-            android:id="@+id/divider"
+        <Button
+            android:id="@+id/next_page_button"
+            style="?android:textAppearanceSmall"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:background="?android:attr/listDivider"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/toNextPage"
+            android:textStyle="bold"
             android:visibility="invisible"/>
 
         <TableLayout
@@ -116,6 +129,17 @@
             </TableRow>
 
         </TableLayout>
+
+        <Button
+            android:id="@+id/upload_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/action_upload"
+            android:textStyle="bold"
+            android:visibility="invisible"/>
+
     </LinearLayout>
 </ScrollView>
 </android.support.constraint.ConstraintLayout>

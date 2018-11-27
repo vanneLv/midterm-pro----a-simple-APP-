@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -249,10 +250,14 @@ public class MainMenuActivity extends AppCompatActivity
                 responseTitle.setText(response_title);
                 responseText.setText(spannable);
 
-                View divide = (View)findViewById(R.id.divider);
-                divide.setVisibility(View.VISIBLE);
                 TableRow table_title = (TableRow)findViewById(R.id.relation_display_title);
                 table_title.setVisibility(View.VISIBLE);
+                Button lastpage = (Button) findViewById(R.id.last_page_button);
+                lastpage.setVisibility(View.VISIBLE);
+                Button nextpage = (Button) findViewById(R.id.next_page_button);
+                nextpage.setVisibility(View.VISIBLE);
+                Button upload = (Button) findViewById(R.id.upload_button);
+                upload.setVisibility(View.VISIBLE);
 
                 //清空上次操作
                 int len = tableLayout.getChildCount();
@@ -282,7 +287,7 @@ public class MainMenuActivity extends AppCompatActivity
                     right_entity.setText(response_rightEntity[i]);
                     row.addView(right_entity);
 
-                    TextView relation = new TextView(getApplicationContext());
+                    final TextView relation = new TextView(getApplicationContext());
                     MyMessageTools.setRelationViewTextStyle(relation,false);
                     int relation_id = Integer.parseInt(response_relationId[i]);
                     String relation_text = null;
@@ -297,6 +302,25 @@ public class MainMenuActivity extends AppCompatActivity
                     row.addView(relation);
 
                     tableLayout.addView(row);
+                    relation.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int temp = highlight.getChange();
+                                    temp++;
+                                    highlight.setChange(temp);
+                                    if(temp%2==0){
+                                        relation.setText(MyMessageTools.unicodeToUtf8("任职"));
+                                    }
+                                    else if(temp%2==1){
+                                        relation.setText(MyMessageTools.unicodeToUtf8("亲属"));
+                                    }
+                                }
+                            });
+                        }
+                    });
 
                 }
             }
@@ -348,10 +372,14 @@ public class MainMenuActivity extends AppCompatActivity
                 responseTitle.setText(response_title);
                 responseText.setText(response_content);
 
-                View divide = (View)findViewById(R.id.divider);
-                divide.setVisibility(View.INVISIBLE);
                 TableRow table_title = (TableRow)findViewById(R.id.relation_display_title);
                 table_title.setVisibility(View.INVISIBLE);
+                Button lastpage = (Button) findViewById(R.id.last_page_button);
+                lastpage.setVisibility(View.VISIBLE);
+                Button nextpage = (Button) findViewById(R.id.next_page_button);
+                nextpage.setVisibility(View.VISIBLE);
+                Button upload = (Button) findViewById(R.id.upload_button);
+                upload.setVisibility(View.VISIBLE);
 
                 //清空上次操作
                 int len = tableLayout.getChildCount();
@@ -454,6 +482,7 @@ public class MainMenuActivity extends AppCompatActivity
                         highlight.getLeftEntity().add(triplesJSON.getString("left_entity"));
                         highlight.getRightEntity().add(triplesJSON.getString("right_entity"));
                         highlight.getRelationId().add(triplesJSON.getString("relation_id"));
+                        highlight.setChange(triplesJSON.getInt("relation_id"));
                     }//存储四组左右起始点信息，为文本高亮做准备
 
                     Log.d("doc_id",doc_id);

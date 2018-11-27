@@ -49,6 +49,9 @@
     <string name="left_entity_display">左实体</string>
     <string name="right_entity_display">右实体</string>
     <string name="relation_display">关系</string>
+    <string name="toLastPage">上一页</string>
+    <string name="toNextPage">下一页</string>
+    <string name="action_upload">提交</string>
 
 
 </resources>
