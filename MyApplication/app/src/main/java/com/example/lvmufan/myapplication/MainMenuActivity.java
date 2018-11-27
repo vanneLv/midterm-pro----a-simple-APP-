@@ -6,11 +6,15 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.ActionMode;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -53,7 +57,39 @@ public class MainMenuActivity extends AppCompatActivity
     ProgressDialog progressDialog;
     User user = new User();
     HighlightStructure highlight = new HighlightStructure();
+    private ActionMode.Callback callback2= new ActionMode.Callback(){
+        //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            MenuInflater menuInflater = actionMode.getMenuInflater();
+            menuInflater.inflate(R.menu.selection_action_menu,menu);
+            return true;//返回false则不会显示弹窗
+        }
+        @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false;
+        }
 
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+            //根据item的ID处理点击事件
+            switch (menuItem.getItemId()){
+                case R.id.name:
+                    Toast.makeText(MainMenuActivity.this, "人名", Toast.LENGTH_SHORT).show();
+                    actionMode.finish();//收起操作菜单
+                    break;
+                case R.id.job:
+                    Toast.makeText(MainMenuActivity.this, "职位", Toast.LENGTH_SHORT).show();
+                    actionMode.finish();
+                    break;
+            }
+            return false;//返回true则系统的"复制"、"搜索"之类的item将无效，只有自定义item有响应
+        }
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +99,8 @@ public class MainMenuActivity extends AppCompatActivity
         tp.setFakeBoldText(true);//标题加粗功能
 
         responseText = (TextView) findViewById(R.id.response_content);
-        responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
-
+        //responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
+        responseText.setCustomSelectionActionModeCallback( callback2);
         tableLayout = (TableLayout) findViewById(R.id.entity_relation_display);
 
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
