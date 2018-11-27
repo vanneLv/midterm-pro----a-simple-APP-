@@ -2,29 +2,31 @@ package com.example.lvmufan.myapplication;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import android.text.TextPaint;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.view.ActionMode;
-//import android.support.v7.view.ActionMode;
-import android.view.MenuInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TableRow;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,11 +41,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import android.content.SharedPreferences;
 
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-
+//import android.support.v7.view.ActionMode;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,27 +61,47 @@ public class MainMenuActivity extends AppCompatActivity
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             MenuInflater menuInflater = actionMode.getMenuInflater();
             menuInflater.inflate(R.menu.selection_action_menu,menu);
+            int start = responseText.getSelectionStart();//获取选择部分的起始信息
+            int end = responseText.getSelectionEnd();
+            System.out.print(start);
+            System.out.print(end);
             return true;//返回false则不会显示弹窗
         }
         @Override
         public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-            return false;
+            MenuInflater menuInflater = actionMode.getMenuInflater();
+            menu.clear();
+            menuInflater.inflate(R.menu.selection_action_menu,menu);
+            return true;
         }
 
         @Override
         public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
             //根据item的ID处理点击事件
+            int start = responseText.getSelectionStart();//获取选择部分的起始信息
+            int end = responseText.getSelectionEnd();
+            // 获得选中的字符
+            String selected_str = responseText.getText().toString().substring(start, end);//获取选择部分的文字
+            System.out.print(start);
+            System.out.print(end);
             switch (menuItem.getItemId()){
                 case R.id.name:
                     Toast.makeText(MainMenuActivity.this, "人名", Toast.LENGTH_SHORT).show();
+                    SpannableStringBuilder styled1 = new SpannableStringBuilder(responseText.getText());
+
+                    styled1.setSpan(new ForegroundColorSpan(Color.RED), start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    responseText.setText(styled1);//更改选中部分的颜色
                     actionMode.finish();//收起操作菜单
                     break;
                 case R.id.job:
                     Toast.makeText(MainMenuActivity.this, "职位", Toast.LENGTH_SHORT).show();
+                    SpannableStringBuilder styled2 = new SpannableStringBuilder(responseText.getText());
+                    styled2.setSpan(new ForegroundColorSpan(Color.GREEN), start,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    responseText.setText(styled2);
                     actionMode.finish();
                     break;
             }
-            return false;//返回true则系统的"复制"、"搜索"之类的item将无效，只有自定义item有响应
+            return true;//返回true则系统的"复制"、"搜索"之类的item将无效，只有自定义item有响应
         }
         @Override
         public void onDestroyActionMode(ActionMode actionMode) {
@@ -112,7 +131,8 @@ public class MainMenuActivity extends AppCompatActivity
         //responseText.setMovementMethod(ScrollingMovementMethod.getInstance());//增加滚动功能
         responseText.setCustomSelectionActionModeCallback(callback2);
         tableLayout = (TableLayout) findViewById(R.id.entity_relation_display);
-
+        //responseText.setText(responseText.spannable);
+        responseText.setMovementMethod(LinkMovementMethod.getInstance());
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
         user.setToken(sp.getString("token"," "));
