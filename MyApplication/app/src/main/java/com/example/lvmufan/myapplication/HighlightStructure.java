@@ -10,6 +10,7 @@ public class HighlightStructure {
     private ArrayList leftEntity;
     private ArrayList rightEntity;
     private ArrayList relationId;
+    private int change;
 
     public HighlightStructure(){
         leftStart = new ArrayList();
@@ -19,6 +20,7 @@ public class HighlightStructure {
         leftEntity = new ArrayList();
         rightEntity = new ArrayList();
         relationId = new ArrayList();
+        change = 0;   //改变实体间的关系
     }
 
     public ArrayList getLeftStart() {
@@ -41,5 +43,11 @@ public class HighlightStructure {
     }
     public ArrayList getRelationId() {
         return relationId;
+    }
+    public int getChange() {
+        return change;
+    }
+    public void setChange(int change) {
+        this.change = change;
     }
 }
