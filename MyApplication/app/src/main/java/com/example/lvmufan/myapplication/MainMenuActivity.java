@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -137,6 +138,7 @@ public class MainMenuActivity extends AppCompatActivity
         responseText.setCustomSelectionActionModeCallback(callback2);
         tableLayout = (TableLayout) findViewById(R.id.entity_relation_display);
         responseText.setMovementMethod(LinkMovementMethod.getInstance());
+
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
         user.setToken(sp.getString("token"," "));
@@ -246,11 +248,7 @@ public class MainMenuActivity extends AppCompatActivity
             isStateEntity = false;
             isStateTriples = false;
 
-        } else if (id == R.id.nav_setting) {
-            isStateTriples = false;
-            isStateEntity = false;
-
-        } else if (id == R.id.nav_sign_out) {
+        }else if (id == R.id.nav_sign_out) {
             //user sign out
             processSignOut();
         }
@@ -367,6 +365,11 @@ public class MainMenuActivity extends AppCompatActivity
                     relation.setText(relation_text);
                     relation.setTextColor(Color.BLACK);
                     row.addView(relation);
+
+                    //checkbox
+                    CheckBox checkbox = new CheckBox(getApplicationContext());
+                    checkbox.setChecked(true);
+                    row.addView(checkbox);
 
                     tableLayout.addView(row);
                     final int finalI = i;
