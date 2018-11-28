@@ -1,6 +1,5 @@
 package com.example.lvmufan.myapplication;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -28,10 +27,14 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
+
+import my.ownBar.demo.view.TextRatingBar;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -42,16 +45,16 @@ import okhttp3.Response;
 
 
 public class MainMenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, TextRatingBar.OnRatingListener{
     TextView responseTitle;
     TextView responseText;
     TableLayout tableLayout;
-    ProgressDialog progressDialog;
     User user = new User();
     TriplesStructure triples = new TriplesStructure();
     EntitiesStructure Entities = new EntitiesStructure();
     boolean isStateEntity = false;
     boolean isStateTriples = false;
+    boolean isState = false;
 
     private ActionMode.Callback callback2= new ActionMode.Callback(){
         @Override
@@ -122,7 +125,6 @@ public class MainMenuActivity extends AppCompatActivity
         responseTitle = (TextView) findViewById(R.id.response_title);
         TextPaint tp = responseTitle.getPaint();
         tp.setFakeBoldText(true);//标题加粗功能
-
         //关系标注标题加粗
         TextView relationTitle1 = (TextView) findViewById(R.id.left_entity_title);
         TextPaint tp1 = relationTitle1.getPaint();
@@ -138,6 +140,7 @@ public class MainMenuActivity extends AppCompatActivity
         responseText.setCustomSelectionActionModeCallback(callback2);
         tableLayout = (TableLayout) findViewById(R.id.entity_relation_display);
         responseText.setMovementMethod(LinkMovementMethod.getInstance());
+
 
         SharedPreferences sp = getSharedPreferences("loginToken", MODE_MULTI_PROCESS);
         user.setUsername(sp.getString("username", "user"));
@@ -165,6 +168,7 @@ public class MainMenuActivity extends AppCompatActivity
                 else if(isStateTriples){
                     processGetRelationTriplesText();
                 }
+
             }
         }); //等待上一页button被按的响应
 
@@ -721,6 +725,13 @@ public class MainMenuActivity extends AppCompatActivity
         editor.putString("entities", jsonToString.toString());//对上传的entities进行存储
         editor.apply();
         return  jsonToString.toString();
+    }
+
+    //更改字体大小的函数
+    @Override
+    public void onRating(int rating) {
+            responseText.setTextSize(15+rating*5);
+            responseTitle.setTextSize(30+rating*5);
     }
 
     //输出加载框的函数

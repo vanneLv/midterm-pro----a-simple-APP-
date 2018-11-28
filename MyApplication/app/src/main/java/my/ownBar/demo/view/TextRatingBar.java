@@ -27,6 +27,10 @@ public class TextRatingBar extends View{
     //小竖条的一半长度
     private int mMarkSize;
 
+    public int tSize;
+
+    public boolean isStateRating;
+
     Paint paint = new Paint();
 
     public TextRatingBar(Context context) {
@@ -42,7 +46,10 @@ public class TextRatingBar extends View{
         mCount = 4;
         mRating = 0;
         mMarkSize = 3;
+        tSize = 15 + mRating * 10;
+        isStateRating = false;
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -89,6 +96,7 @@ public class TextRatingBar extends View{
                 }
             }
         }
+        isStateRating = true;
         return true;
     }
 
@@ -97,13 +105,25 @@ public class TextRatingBar extends View{
         invalidate();
     }
 
-    private OnRatingListener onRatingListener;
+    public int gettSize() {
+        return tSize ;
+    }
+
+    public boolean getIsStateRating(){
+        return isStateRating;
+    }
+
+    public void setIsStateRating(boolean state){
+        isStateRating = state;
+    }
+
+    public OnRatingListener onRatingListener;
 
     public void setOnRatingListener(OnRatingListener onRatingListener) {
         this.onRatingListener = onRatingListener;
     }
 
-    interface OnRatingListener{
+    public interface OnRatingListener{
         void onRating(int rating);
     }
 }

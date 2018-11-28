@@ -21,6 +21,7 @@
             android:orientation="vertical">
 
             <my.ownBar.demo.view.TextRatingBar
+                android:id="@+id/text_rating_bar"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:paddingLeft="40dp"
@@ -62,7 +63,7 @@
                 android:focusableInTouchMode="true"
                 android:scrollbars="vertical"
                 android:singleLine="false"
-                android:text="选中文字后点击人名或职位可分别对人名和职位进行实体标注"
+                android:text="选中文字后点击人名或职位可分别对人名和职位进行实体标注\n在关系标注界面点击关系可更改关系，可勾消来表示关系错误\n\n点击提交可上传数据"
                 android:textIsSelectable="true"
                 android:textSize="20sp" />
 
