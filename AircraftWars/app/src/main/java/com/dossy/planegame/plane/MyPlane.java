@@ -260,7 +260,7 @@ public class MyPlane extends GameObject implements IMyPlane {
             }
 
         } else {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 10; i++) {
                 MyBlueBullet bullet = (MyBlueBullet) factory.createMyBlueBullet(resources);
                 bullets.add(bullet);
             }

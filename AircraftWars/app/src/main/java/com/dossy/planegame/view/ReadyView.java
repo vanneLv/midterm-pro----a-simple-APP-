@@ -187,6 +187,7 @@ public class ReadyView extends BaseView {
             }
 
             //开始游戏的按钮
+            paint.setFakeBoldText(true);
             paint.setColor(Color.BLACK);
             canvas.drawText(startGame, screen_width / 2 - strwid / 2, button_y
                     + button.getHeight() / 2 + strhei / 2, paint);

@@ -127,7 +127,7 @@ public class BossPlane extends EnemyPlane {
     @Override
     public void initBitmap() {
         boosPlane = BitmapFactory.decodeResource(resources,
-                R.drawable.boosplane);
+                R.drawable.bossplane);
         boosPlaneBomb = BitmapFactory.decodeResource(resources,
                 R.drawable.bossplane_bomb);
         bossPlane_crazy = BitmapFactory.decodeResource(resources,

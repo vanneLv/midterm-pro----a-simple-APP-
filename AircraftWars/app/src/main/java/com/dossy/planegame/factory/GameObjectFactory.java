@@ -2,12 +2,12 @@ package com.dossy.planegame.factory;
 
 import android.content.res.Resources;
 
+import com.dossy.planegame.bullet.BossRHellfireBullet;
+import com.dossy.planegame.bullet.BossSunBullet;
+import com.dossy.planegame.bullet.BossYHellfireBullet;
 import com.dossy.planegame.plane.BigPlane;
 import com.dossy.planegame.bullet.BigPlaneBullet;
 import com.dossy.planegame.bullet.BossFlameBullet;
-import com.dossy.planegame.bullet.BossSunBullet;
-import com.dossy.planegame.bullet.BossYHellfireBullet;
-import com.dossy.planegame.bullet.BossRHellfireBullet;
 import com.dossy.planegame.bullet.BossDefaultBullet;
 import com.dossy.planegame.plane.BossPlane;
 import com.dossy.planegame.object.PurpleBulletGoods;
@@ -96,10 +96,6 @@ public class GameObjectFactory {
         return new BossFlameBullet(resources);
     }
 
-    public GameObject createBossSunBullet(Resources resources) {
-        return new BossSunBullet(resources);
-    }
-
     public GameObject createBossYHellfireBullet(Resources resources) {
         return new BossYHellfireBullet(resources);
     }
@@ -110,6 +106,10 @@ public class GameObjectFactory {
 
     public GameObject createBossBulletDefault(Resources resources) {
         return new BossDefaultBullet(resources);
+    }
+
+    public GameObject createBossSunBullet(Resources resources) {
+        return new BossSunBullet(resources);
     }
 
     /**

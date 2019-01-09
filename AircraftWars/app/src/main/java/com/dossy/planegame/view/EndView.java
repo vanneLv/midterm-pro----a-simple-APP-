@@ -20,6 +20,8 @@ import com.dossy.planegame.sounds.GameSoundPool;
 @SuppressLint("ViewConstructor")
 public class EndView extends BaseView {
     private int score;
+    private float text_x;
+    private float text_y;
     private float button_x;
     private float button_y;
     private float button_y2;
@@ -29,6 +31,7 @@ public class EndView extends BaseView {
     private boolean isBtChange2;
     private String startGame = "重新开始";    // ��ť������
     private String exitGame = "退出游戏";
+    private Bitmap text;
     private Bitmap button;                    // ��ťͼƬ
     private Bitmap button2;                    // ��ťͼƬ
     private Bitmap background;                // ����ͼƬ
@@ -120,10 +123,13 @@ public class EndView extends BaseView {
     @Override
     public void initBitmap() {
         background = BitmapFactory.decodeResource(getResources(), R.drawable.bg_01);
+        text = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
         button = BitmapFactory.decodeResource(getResources(), R.drawable.button);
         button2 = BitmapFactory.decodeResource(getResources(), R.drawable.button2);
         scalex = screen_width / background.getWidth();
         scaley = screen_height / background.getHeight();
+        text_x = screen_width / 2 - text.getWidth() / 2;
+        text_y = screen_height / 2 - text.getHeight();
         button_x = screen_width / 2 - button.getWidth() / 2;
         button_y = screen_height / 2 + button.getHeight();
         button_y2 = button_y + button.getHeight() + 40;
@@ -135,6 +141,9 @@ public class EndView extends BaseView {
 
     @Override
     public void release() {
+        if (!text.isRecycled()) {
+            text.recycle();
+        }
         if (!button.isRecycled()) {
             button.recycle();
         }
@@ -155,6 +164,7 @@ public class EndView extends BaseView {
             canvas.scale(scalex, scaley, 0, 0);                    // 缩放
             canvas.drawBitmap(background, 0, 0, paint);        // 图片
             canvas.restore();
+            canvas.drawBitmap(text, text_x, text_y, paint);
             if (isBtChange) {
                 canvas.drawBitmap(button2, button_x, button_y, paint);
             } else {
@@ -170,8 +180,11 @@ public class EndView extends BaseView {
             canvas.drawText(startGame, screen_width / 2 - strwid / 2, button_y + button.getHeight() / 2 + strhei / 2, paint);
             canvas.drawText(exitGame, screen_width / 2 - strwid / 2, button_y2 + button.getHeight() / 2 + strhei / 2, paint);
             paint.setTextSize(60);
+            paint.setColor(Color.WHITE);
+            paint.setFakeBoldText(true);
             float textlong = paint.measureText("总分:" + String.valueOf(score));
-            canvas.drawText("总分:" + String.valueOf(score), screen_width / 2 - textlong / 2, screen_height / 2 - 100, paint);
+            canvas.drawText("总分:" + String.valueOf(score), screen_width / 2 - textlong / 2, button_y / 2 + text_y / 2 + text.getHeight() / 2, paint);
+            paint.setColor(Color.BLACK);
         } catch (Exception err) {
             err.printStackTrace();
         } finally {
