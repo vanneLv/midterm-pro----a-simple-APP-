@@ -21,13 +21,13 @@ public interface GameConstant {
 	//敌机总数量
 	int SMALLPLANE_COUNT = 10;// 小型机
 	int MIDDLEPLANE_COUNT = 8;// 中型机
-	int BIGPLANE_COUNT = 10;// 大型机
+	int BIGPLANE_COUNT = 3;// 大型机
 	int BOSSPLANE_COUNT = 1;// Boss
 
 	//敌机血量
 	int SMALLPLANE_BLOOD = 1;// 小型机
-	int MIDDLEPLANE_BLOOD = 40;// 中型机
-	int BIGPLANE_BLOOD = 120;// 大型机
+	int MIDDLEPLANE_BLOOD = 20;// 中型机
+	int BIGPLANE_BLOOD = 40;// 大型机
 	int BOSSPLANE_BLOOD = 1000;// Boss总血量
 	int BOSSPLANE_ANGER_BLOOD = 700;// Boss进入愤怒状态的血量值（小于Boss总血量）
 	int BOSSPLANE_CRAZY_BLOOD = 500;// Boss进入疯狂状态的血量值（小于Boss愤怒状态的血量）
@@ -37,7 +37,7 @@ public interface GameConstant {
 	int SMALLPLANE_SCORE = 100;// 小型机
 	int MIDDLEPLANE_SCORE = 300;// 中型机
 	int BIGPLANE_SCORE = 800;// 大型机
-	int BOSSPLANE_SCORE = 2000;// Boss
+	int BOSSPLANE_SCORE = 4000;// Boss
 
 	//物品出现所需的积分值
 	int MIDDLEPLANE_APPEARSCORE = 2000;// 中型机
@@ -52,7 +52,7 @@ public interface GameConstant {
 	int MISSILE_HARM = 80;// 导弹
 	int MYBULLET_HARM = 1;// 我方初始子弹(默认值为1)
 	int MYBULLET1_HARM = 4;// 我方子弹1
-	int MYBULLET2_HARM = 5;// 我方子弹2
+	int MYBULLET2_HARM = 8;// 我方子弹2
 
 	//我军速度
 	int MYBULLET_SPEED = 80;// 原始子弹速度

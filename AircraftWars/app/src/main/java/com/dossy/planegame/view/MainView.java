@@ -475,7 +475,7 @@ public class MainView extends BaseView {
 					screen_width - 160, 50, paint);
 			// 绘制生命数值
 			if (mLifeAmount > 0) {
-				paint.setColor(Color.BLACK);
+				paint.setColor(Color.WHITE);
 				canvas.drawBitmap(life_amount, screen_width - 150,
 						screen_height - life_amount.getHeight() - 10, paint);
 				canvas.drawText("X " + String.valueOf(mLifeAmount),
@@ -504,7 +504,7 @@ public class MainView extends BaseView {
 			// 绘制导弹按钮
 			if (missileCount > 0) {
 				paint.setTextSize(40);
-				paint.setColor(Color.BLACK);
+				paint.setColor(Color.WHITE);
 				canvas.drawBitmap(missile_bt, 10, missile_bt_y, paint);
 				canvas.drawText("X " + String.valueOf(missileCount),
 						10 + missile_bt.getWidth(), screen_height - 25, paint);// 绘制文字

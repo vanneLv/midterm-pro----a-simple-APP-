@@ -6,8 +6,6 @@ import com.dossy.planegame.plane.BigPlane;
 import com.dossy.planegame.bullet.BigPlaneBullet;
 import com.dossy.planegame.bullet.BossFlameBullet;
 import com.dossy.planegame.bullet.BossSunBullet;
-import com.dossy.planegame.bullet.BossTriangleBullet;
-import com.dossy.planegame.bullet.BossGThunderBullet;
 import com.dossy.planegame.bullet.BossYHellfireBullet;
 import com.dossy.planegame.bullet.BossRHellfireBullet;
 import com.dossy.planegame.bullet.BossDefaultBullet;
@@ -100,14 +98,6 @@ public class GameObjectFactory {
 
     public GameObject createBossSunBullet(Resources resources) {
         return new BossSunBullet(resources);
-    }
-
-    public GameObject createBossTriangleBullet(Resources resources) {
-        return new BossTriangleBullet(resources);
-    }
-
-    public GameObject createBossGThunderBullet(Resources resources) {
-        return new BossGThunderBullet(resources);
     }
 
     public GameObject createBossYHellfireBullet(Resources resources) {

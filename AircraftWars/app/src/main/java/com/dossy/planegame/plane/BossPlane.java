@@ -7,8 +7,6 @@ import android.graphics.Canvas;
 
 import com.dossy.planegame.bullet.BossFlameBullet;
 import com.dossy.planegame.bullet.BossSunBullet;
-import com.dossy.planegame.bullet.BossTriangleBullet;
-import com.dossy.planegame.bullet.BossGThunderBullet;
 import com.dossy.planegame.bullet.BossYHellfireBullet;
 import com.dossy.planegame.bullet.BossRHellfireBullet;
 import com.dossy.planegame.bullet.BossDefaultBullet;
@@ -532,11 +530,6 @@ public class BossPlane extends EnemyPlane {
                         .createBossSunBullet(resources);
                 bullets.add(bullet1);
 
-                // 生产子弹3
-                BossGThunderBullet bullet3 = (BossGThunderBullet) factory
-                        .createBossGThunderBullet(resources);
-                bullets.add(bullet3);
-
                 // 生产子弹5
                 BossRHellfireBullet bullet5 = (BossRHellfireBullet) factory
                         .createBossRHellfireBullet(resources);
@@ -590,11 +583,6 @@ public class BossPlane extends EnemyPlane {
                         .createBossRHellfireBullet(resources);
                 bullets.add(bullet5);
             } else {
-                // 生产子弹3
-                BossGThunderBullet bullet3 = (BossGThunderBullet) factory
-                        .createBossGThunderBullet(resources);
-                bullets.add(bullet3);
-
                 // 生产子弹4
                 BossYHellfireBullet bullet4 = (BossYHellfireBullet) factory
                         .createBossYHellfireBullet(resources);
@@ -621,35 +609,18 @@ public class BossPlane extends EnemyPlane {
                         .createBossSunBullet(resources);
                 bullets.add(bullet1);
 
-                // 生产子弹2
-                BossTriangleBullet bullet2 = (BossTriangleBullet) factory
-                        .createBossTriangleBullet(resources);
-                bullets.add(bullet2);
             } else if (speedTime <= 4) {
                 // 生产子弹1
                 BossSunBullet bullet1 = (BossSunBullet) factory
                         .createBossSunBullet(resources);
                 bullets.add(bullet1);
 
-                // 生产子弹3
-                BossGThunderBullet bullet3 = (BossGThunderBullet) factory
-                        .createBossGThunderBullet(resources);
-                bullets.add(bullet3);
             } else {
                 // 生产子弹1
                 BossSunBullet bullet1 = (BossSunBullet) factory
                         .createBossSunBullet(resources);
                 bullets.add(bullet1);
 
-                // 生产子弹2
-                BossTriangleBullet bullet2 = (BossTriangleBullet) factory
-                        .createBossTriangleBullet(resources);
-                bullets.add(bullet2);
-
-                // 生产子弹3
-                BossGThunderBullet bullet3 = (BossGThunderBullet) factory
-                        .createBossGThunderBullet(resources);
-                bullets.add(bullet3);
             }
 
         }
