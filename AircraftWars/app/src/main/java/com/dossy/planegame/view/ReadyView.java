@@ -94,6 +94,7 @@ public class ReadyView extends BaseView {
                     && y > button_y2 && y < button_y2 + button.getHeight()) {
                 sounds.playSound(7, 0);
                 isBtChange2 = true;
+                mMediaPlayer.stop();
                 drawSelf();
                 mainActivity.getHandler().sendEmptyMessage(ConstantUtil.END_GAME);
             }

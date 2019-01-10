@@ -100,6 +100,7 @@ public class EndView extends BaseView {
                     && y > button_y2 && y < button_y2 + button.getHeight()) {
                 sounds.playSound(7, 0);
                 isBtChange2 = true;
+                mMediaPlayer.stop();
                 drawSelf();
                 threadFlag = false;
                 mainActivity.getHandler().sendEmptyMessage(ConstantUtil.END_GAME);

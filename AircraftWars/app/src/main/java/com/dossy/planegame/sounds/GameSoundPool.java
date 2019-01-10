@@ -44,9 +44,7 @@ public class GameSoundPool {
 
     public void playSound(int sound, int loop) {
         AudioManager am = (AudioManager) mainActivity.getSystemService(Context.AUDIO_SERVICE);
-        float stramVolumeCurrent = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-        float stramMaxVolumeCurrent = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-        float volume = stramVolumeCurrent / stramMaxVolumeCurrent;
+        float volume = 0.4f;
         soundPool.play(map.get(sound), volume, volume, 1, loop, 1.0f);
     }
 }
