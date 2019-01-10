@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
@@ -36,12 +37,19 @@ public class EndView extends BaseView {
     private Bitmap button2;                    // ��ťͼƬ
     private Bitmap background;                // ����ͼƬ
     private Rect rect;                        // �������ֵ�����
+    private MediaPlayer mMediaPlayer; // 用来实现背景音乐播放
     private MainActivity mainActivity;
 
     public EndView(Context context, GameSoundPool sounds) {
         super(context, sounds);
         this.mainActivity = (MainActivity) context;
         rect = new Rect();
+        // 背景音乐
+        mMediaPlayer = MediaPlayer.create(mainActivity, R.raw.game3);
+        mMediaPlayer.setLooping(true);
+        if (!mMediaPlayer.isPlaying()) {
+            mMediaPlayer.start();
+        }
         thread = new Thread(this);
     }
 

@@ -37,15 +37,11 @@ public class GameSoundPool {
         map.put(5, soundPool.load(mainActivity, R.raw.bigexplosion, 1));
         map.put(6, soundPool.load(mainActivity, R.raw.get_goods, 1));
         map.put(7, soundPool.load(mainActivity, R.raw.button, 1));
-        map.put(8, soundPool.load(mainActivity, R.raw.game, 1));
-        map.put(9, soundPool.load(mainActivity, R.raw.game2, 1));
+        //map.put(8, soundPool.load(mainActivity, R.raw.game, 1));
+        //map.put(9, soundPool.load(mainActivity, R.raw.game2, 1));
     }
 
-    /**
-     * 播放游戏背音乐
-     * @param sound
-     * @param loop
-     */
+
     public void playSound(int sound, int loop) {
         AudioManager am = (AudioManager) mainActivity.getSystemService(Context.AUDIO_SERVICE);
         float stramVolumeCurrent = am.getStreamVolume(AudioManager.STREAM_MUSIC);
